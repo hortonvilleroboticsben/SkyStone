@@ -40,18 +40,43 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ImageFormat;
+import android.graphics.Paint;
+import android.graphics.SurfaceTexture;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.StreamConfigurationMap;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.media.Image;
+import android.media.ImageReader;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.util.Log;
+import android.util.Size;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.Surface;
+import android.view.TextureView;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageButton;
@@ -59,6 +84,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.blocks.ftcrobotcontroller.ProgrammingWebHandlers;
 import com.google.blocks.ftcrobotcontroller.runtime.BlocksOpMode;
@@ -119,12 +145,45 @@ import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebInfo
 import org.firstinspires.ftc.robotserver.internal.programmingmode.ProgrammingModeManager;
 import org.firstinspires.inspection.RcInspectionActivity;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @SuppressWarnings("WeakerAccess")
 public class FtcRobotControllerActivity extends Activity
   {
+
+    CameraManager cameraManager;
+
+    public static FtcRobotControllerActivity ftcApp;
+
+    byte[] bytes;
+
+    File filepath;
+
+    public TextureView imageView;
+
+    TextView averages, heightTV, widthTV;
+
+    CameraDevice cameraDevice;
+    String cameraId;
+    Size imageDimensions;
+    CaptureRequest.Builder captureRequestBuilder;
+    CameraCaptureSession cameraSession;
+
+    Bitmap finalImage;
+
+
+    Handler backgroundHandler;
+    HandlerThread handlerThread;
   public static final String TAG = "RCActivity";
   public String getTag() { return TAG; }
 
@@ -260,6 +319,31 @@ public class FtcRobotControllerActivity extends Activity
       return;
     }
 
+    setContentView(R.layout.activity_ftc_controller);
+
+    imageView = (TextureView) findViewById(R.id.ftcImageView);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+    }
+    View view = findViewById(R.id.entire_screen);
+    LinearLayout view2 = findViewById(R.id.surface);
+
+    view2.addView(new Doodler(this));
+
+    ftcApp = FtcRobotControllerActivity.this;
+    //ImageView lines = (ImageView)findViewById(R.id.lines);
+    Bitmap bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.RGB_565);
+    Canvas c = new Canvas(bitmap);
+
+    final CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+    try {
+      cameraId = cameraManager.getCameraIdList()[0];
+      CameraCharacteristics cc = cameraManager.getCameraCharacteristics(cameraId);
+      Log.e("Vision OnCreate", " \n onCreate");
+    } catch (Exception e) {
+      Log.e("Vision OnCreate", e + " \n onCreate");
+    }
+
     RobotLog.onApplicationStart();  // robustify against onCreate() following onDestroy() but using the same app instance, which apparently does happen
     RobotLog.vv(TAG, "onCreate()");
     ThemedActivity.appAppThemeToActivity(getTag(), this); // do this way instead of inherit to help AppInventor
@@ -294,7 +378,7 @@ public class FtcRobotControllerActivity extends Activity
     receivedUsbAttachmentNotifications = new ConcurrentLinkedQueue<UsbDevice>();
     eventLoop = null;
 
-    setContentView(R.layout.activity_ftc_controller);
+
 
     preferencesHelper = new PreferencesHelper(TAG, context);
     preferencesHelper.writeBooleanPrefIfDifferent(context.getString(R.string.pref_rc_connected), true);
@@ -425,11 +509,25 @@ public class FtcRobotControllerActivity extends Activity
   protected void onResume() {
     super.onResume();
     RobotLog.vv(TAG, "onResume()");
+    startBackgroundThread();
+    if(imageView.isAvailable()){
+      try {
+        openCamera();
+      } catch (CameraAccessException e) {
+        e.printStackTrace();
+        Toast.makeText(FtcRobotControllerActivity.this, e+"", Toast.LENGTH_LONG).show();
+      }
+    } else {
+      imageView.setSurfaceTextureListener(surfaceTextureListener);
+    }
   }
 
   @Override
   protected void onPause() {
     super.onPause();
+    try{
+      stopBackgroundThread();
+    }catch(Exception e){}
     RobotLog.vv(TAG, "onPause()");
   }
 
@@ -807,4 +905,361 @@ public class FtcRobotControllerActivity extends Activity
       wifiMuteStateMachine.consumeEvent(WifiMuteEvent.USER_ACTIVITY);
     }
   }
+    public Activity getActivity() {
+      return FtcRobotControllerActivity.this;
+    }
+
+    public CameraManager getCameraManager() {
+      return cameraManager;
+    }
+
+    public TextureView getTextureView() {
+      return imageView;
+    }
+
+    TextureView.SurfaceTextureListener surfaceTextureListener = new TextureView.SurfaceTextureListener() {
+      @Override
+      public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        try {
+          openCamera();
+        } catch (Exception e ){
+          Toast.makeText(FtcRobotControllerActivity.this, e+"", Toast.LENGTH_LONG).show();
+        }
+      }
+
+
+
+      @Override
+      public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+      }
+
+      @Override
+      public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        return false;
+      }
+
+      @Override
+      public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+      }
+    };
+
+    CameraDevice.StateCallback stateCallBack = new CameraDevice.StateCallback() {
+      @Override
+      public void onOpened(CameraDevice camera) {
+        cameraDevice = camera;
+
+        try {
+          startCameraPreview();
+        } catch (Exception e){
+          Toast.makeText(FtcRobotControllerActivity.this, e+"", Toast.LENGTH_LONG).show();
+        }
+      }
+
+      @Override
+      public void onDisconnected(CameraDevice camera) {
+        cameraDevice.close();
+      }
+
+      @Override
+      public void onError(CameraDevice camera, int error) {
+        cameraDevice.close();
+        cameraDevice = null;
+      }
+    };
+
+    public File takePicture() throws CameraAccessException{
+      if (cameraDevice == null){
+        Log.e("Camera Device", "Null");
+        return null;
+      }
+
+      CameraManager manager = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
+
+      CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraDevice.getId());
+      Size[] jpegSize = null;
+
+      jpegSize = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
+
+      int width = 100;
+      int height =100;
+
+      if (jpegSize!=null && jpegSize.length>0){
+        width = jpegSize[0].getWidth();
+        height = jpegSize[0].getHeight();
+      }
+
+      ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
+      List<Surface> outputSurface = new ArrayList<>(2);
+      outputSurface.add(reader.getSurface());
+
+      outputSurface.add(new Surface(imageView.getSurfaceTexture()));
+
+      final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+      captureBuilder.addTarget(reader.getSurface());
+      captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+
+      //int rotation = getWindowManager().getDefaultDisplay().getRotation();
+      captureBuilder.set(CaptureRequest.CONTROL_MODE, 50);
+
+      // File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+      //Environment.DIRECTORY_PICTURES), "CameraDemo");
+       /* if (!mediaStorageDir.exists()){
+            if (!mediaStorageDir.mkdirs()){
+                Toast.makeText(MainActivity.this, "This directory does not exist", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+
+*/
+
+
+      //filepath = new File(mediaStorageDir.getPath() + File.separator +
+      //        "IMG_"+ timeStamp + ".jpg");
+      filepath = getOutputMediaFile();
+
+      ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
+        @Override
+        public void onImageAvailable(ImageReader reader) {
+          Image image = null;
+
+          image = reader.acquireLatestImage();
+          ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+          bytes = new byte[buffer.capacity()];
+
+          try {
+            finalImage = save(bytes);
+            //b.compress(Bitmap.CompressFormat.JPEG, 100, null);
+            //finalImage = null;
+            //Toast.makeText(FtcRobotControllerActivity.this, pos+"", Toast.LENGTH_LONG).show();
+          } catch (Exception e){
+            Toast.makeText(FtcRobotControllerActivity.this, e+"6465468465", Toast.LENGTH_LONG).show();
+          } finally {
+            if (image != null){
+              image.close();
+            }
+          }
+
+        }
+      };
+
+      reader.setOnImageAvailableListener(readerListener, backgroundHandler);
+
+      final CameraCaptureSession.CaptureCallback captureListener = new CameraCaptureSession.CaptureCallback() {
+        @Override
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+          super.onCaptureCompleted(session, request, result);
+          //Toast.makeText(MainActivity.this, "Saved", Toast.LENGTH_LONG).show();
+          //Toast.makeText(MainActivity.this, filepath+"", Toast.LENGTH_LONG).show();
+          try {
+            startCameraPreview();
+          } catch (Exception e){
+            Toast.makeText(FtcRobotControllerActivity.this, e+"", Toast.LENGTH_LONG).show();
+          }
+
+
+
+        }
+      };
+
+
+      cameraDevice.createCaptureSession(outputSurface, new CameraCaptureSession.StateCallback() {
+        @Override
+        public void onConfigured(@NonNull CameraCaptureSession session) {
+          try {
+            session.capture(captureBuilder.build(), captureListener, backgroundHandler);
+          } catch (Exception e){
+            Toast.makeText(FtcRobotControllerActivity.this, e+"", Toast.LENGTH_LONG).show();
+          }
+
+        }
+
+        @Override
+        public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+
+        }
+      },  backgroundHandler);
+      //save();
+      return filepath;
+    }
+    //check imageAnasdlfi because i think it's saving in there
+    //idk if this save meathod even works
+    public Bitmap save(byte[] bytes){
+      OutputStream outputStream = null;
+      //Bitmap b = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+      Bitmap b = imageView.getBitmap();
+      finalImage = b;
+
+
+      try {
+        OutputStream out = new FileOutputStream(filepath);
+        b.compress(Bitmap.CompressFormat.JPEG, 100, out);
+        out.flush();
+        out.close();
+
+      } catch (Exception e){
+        Toast.makeText(FtcRobotControllerActivity.this, e+"", Toast.LENGTH_LONG).show();
+      }
+
+        /*try {
+            outputStream = new FileOutputStream(filepath);
+            outputStream.write(bytes);
+            outputStream.close();
+            Toast.makeText(FtcRobotControllerActivity.this, filepath+"", Toast.LENGTH_LONG).show();
+        } catch (Exception e){
+            Toast.makeText(FtcRobotControllerActivity.this, e+"", Toast.LENGTH_LONG).show();
+        }*/
+      return b;
+    }
+
+    public void openCamera() throws CameraAccessException {
+      CameraManager cameraManager = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
+
+      cameraId = cameraManager.getCameraIdList()[0];
+
+      CameraCharacteristics cc = cameraManager.getCameraCharacteristics(cameraId);
+      StreamConfigurationMap map = cc.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+      imageDimensions = map.getOutputSizes(SurfaceTexture.class)[0];
+
+      try {
+        int permissionCheck = this.checkSelfPermission("android.permission.CAMERA");
+        //checkPermission("android.permission.CAMERA", null, null);
+        cameraManager.openCamera(cameraId, stateCallBack, null);
+      } catch (Exception e){
+        Toast.makeText(FtcRobotControllerActivity.this, e+"", Toast.LENGTH_LONG).show();
+        System.out.println(e);
+      }
+    }
+
+
+    private void startCameraPreview() throws  CameraAccessException{
+      SurfaceTexture texture = imageView.getSurfaceTexture();
+      texture.setDefaultBufferSize(imageDimensions.getWidth(), imageDimensions.getHeight());
+
+      Surface surface = new Surface(texture);
+
+      captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+
+      captureRequestBuilder.addTarget(surface);
+
+      cameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback() {
+        @Override
+        public void onConfigured(CameraCaptureSession session) {
+          if(cameraDevice == null){
+            return;
+          }
+
+          cameraSession = session;
+          try {
+            updatePreview();
+          } catch (Exception e){
+            Toast.makeText(FtcRobotControllerActivity.this, e+"", Toast.LENGTH_LONG).show();
+          }
+
+
+        }
+
+        @Override
+        public void onConfigureFailed(CameraCaptureSession session) {
+
+        }
+      }, null);
+
+    }
+
+    private void updatePreview() throws CameraAccessException{
+      if(cameraDevice == null){
+        return;
+      }
+
+      captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_ANTIBANDING_MODE_AUTO);
+      cameraSession.setRepeatingRequest(captureRequestBuilder.build(), null, backgroundHandler);
+    }
+
+//    @Override
+//    protected void onResume() {
+//      super.onResume();
+//      startBackgroundThread();
+//
+//      if(imageView.isAvailable()){
+//        try {
+//          openCamera();
+//        } catch (CameraAccessException e) {
+//          e.printStackTrace();
+//          Toast.makeText(FtcRobotControllerActivity.this, e+"", Toast.LENGTH_LONG).show();
+//        }
+//      } else {
+//        imageView.setSurfaceTextureListener(surfaceTextureListener);
+//      }
+//
+//    }
+
+    private void startBackgroundThread(){
+      handlerThread = new HandlerThread("Camera background");
+      handlerThread.start();
+
+      backgroundHandler = new Handler((handlerThread.getLooper()));
+    }
+
+    private void stopBackgroundThread() throws InterruptedException{
+      handlerThread.quitSafely();
+      handlerThread.join();
+
+      backgroundHandler = null;
+      handlerThread = null;
+
+    }
+
+
+//    @Override
+//    protected void onPause(){
+//      try {
+//        stopBackgroundThread();
+//      } catch (Exception e) {
+//        Toast.makeText(FtcRobotControllerActivity.this, e+"", Toast.LENGTH_LONG).show();
+//        System.out.println(e);
+//      }
+//      super.onPause();
+//    }
+
+    private static File getOutputMediaFile(){
+      File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+              Environment.DIRECTORY_PICTURES), "CameraCaptureApp");
+      if (!mediaStorageDir.exists()){
+        if (!mediaStorageDir.mkdirs()){
+          return null;
+        }
+      }
+
+      String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+      return new File(mediaStorageDir.getPath() + File.separator +
+              "IMG_"+ timeStamp + ".jpg");
+    }
+
+    public class MyView extends View
+    {
+      Paint paint = null;
+      public MyView(Context context)
+      {
+        super(context);
+        paint = new Paint();
+      }
+
+      @Override
+      protected void onDraw(Canvas canvas)
+      {
+        super.onDraw(canvas);
+        int x = getWidth();
+        int y = getHeight();
+        int radius;
+        radius = 100;
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.WHITE);
+        canvas.drawPaint(paint);
+        // Use Color.parseColor to define HTML colors
+        paint.setColor(Color.parseColor("#CD5C5C"));
+        canvas.drawCircle(x / 2, y / 2, radius, paint);
+      }
+    }
 }
