@@ -159,6 +159,21 @@ public class Auto extends OpMode {
 
         drive.WaitForFlag("Grabbed");
 
+        drive.translate(0,safeSpeed,5);
 
+        //Move to skyStone pos 1 even if we are at pos 2 || 3
+
+
+        if(returnPath.equals("wall")) {
+            drive.translate(0, safeSpeed, 22);
+        }
+
+        if(!apMoveFoundation) {
+            //If we are moving foundation
+            drive.translate(-87, safeSpeed, 73);
+        } else {
+            //If we are not move foundation
+            drive.translate(-87,safeSpeed,40);
+        }
     }
 }
