@@ -169,7 +169,7 @@ public class Auto extends OpMode {
                 drive.translate(-85,0.5,16);
                 break;
         }
-
+//hi
         if(returnPath.equals("wall")) {
             drive.translate(0, 0.5, 18);
         }
