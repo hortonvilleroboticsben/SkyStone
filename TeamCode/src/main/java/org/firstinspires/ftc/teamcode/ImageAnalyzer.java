@@ -49,16 +49,25 @@ public class ImageAnalyzer extends OpMode {
 
     public int[] analyze(File filename) {
         telemetry.addData("ImageAnalyzer: ", "true");
-        while(!filename.exists() || !filename.canWrite());
+        //while(!filename.exists() || !filename.canWrite());
+        /*try{
+            while (!filename.exists() || !filename.canWrite()){
+                TimeUnit.MILLISECONDS.sleep(100);
+
+            }
+        } catch (InterruptedException e ){
+            Log.v("HELLO", e+"");
+        }*/
         String filenameString = filename.getPath();
         Bitmap image = null;
         try {
             while(image == null) {
                 image = BitmapFactory.decodeFile(filenameString);
-                TimeUnit.MILLISECONDS.sleep(10);
+                TimeUnit.MILLISECONDS.sleep(100);
+
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+           Log.v("HELlO2", e+"");
         }
         image = BitmapFactory.decodeFile(filenameString);//filename.getAbsolutePath()
         Log.v("IMAGE", ""+(image==null)+":"+filename);
@@ -78,6 +87,8 @@ public class ImageAnalyzer extends OpMode {
 
         //return -1;
         return blurImg(croppedImg);
+        //int[] a = {-1, -1};
+        //return a;
     }
     /*public static void saveImg(BufferedImage image, File filePath){
         try {
@@ -108,7 +119,7 @@ public class ImageAnalyzer extends OpMode {
 //        DistortImageOps.rotate(layers, layers, BorderType.ZERO, InterpolationType.POLYNOMIAL4, 270);
         //for (int i = 0; i<layers.getNumBands();i++) ImageMiscOps.rotateCW(layers.getBand(i), layers.getBand(i));
         //ConvertBitmap.planarToBitmap(layers, bitmap, null);
-        bitmap = Bitmap.createBitmap(bitmap,50, 300,190,50);
+        bitmap = Bitmap.createBitmap(bitmap,50, 300,180,50);
         save(bitmap);
         //save(bitmap);
         width = bitmap.getWidth();
@@ -162,8 +173,8 @@ public class ImageAnalyzer extends OpMode {
         save(bitmap);
         int xAverages = 0;
         int count = 0;
-        for (int p = 0; p < width; p+=1) {
-            for (int e = 0; e < height; e+=1) {
+        for (int p = 0; p < width; p+=5) {
+            for (int e = 0; e < height; e+=5) {
                 //textView.setText("asdlfjalsdjfk;asdfjasdlkfj");
 
 
@@ -176,7 +187,7 @@ public class ImageAnalyzer extends OpMode {
                 int gray = (int) (4 * R + 0 * G + -8 * B);//(R,G,B)->(0.2989,0.5870,0.1140)
                 int average = G+R+B;
                 // use 128 as threshold, above -> white, below -> black
-                if (R > 140 && B < 140) {
+                if (R > 115 && B < 115) {
                     count++;
                     xAverages += p;
                     gray = 255;
@@ -201,11 +212,11 @@ public class ImageAnalyzer extends OpMode {
             //Toast.makeText(context, "2", Toast.LENGTH_LONG).show();
             pos =  2;
         }
-        if(xAverages >= 5*width/11 && xAverages < 6*width/11) {
+        if(xAverages >= 5*width/11 && xAverages < 7*width/11) {
             //Toast.makeText(context, "3", Toast.LENGTH_LONG).show();
             pos =  3;
         }
-        if(xAverages >= 6*width/11 && xAverages <= width){
+        if(xAverages >= 7*width/11 && xAverages <= width){
             //Toast.makeText(context, "1", Toast.LENGTH_LONG).show();
             pos =  1;
         }
