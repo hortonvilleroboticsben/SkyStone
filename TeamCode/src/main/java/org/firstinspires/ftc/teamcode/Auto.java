@@ -126,7 +126,7 @@ public class Auto extends OpMode {
         drive.WaitForFlag("Vision Done");
 
         lift.WaitForFlag("Vision Done");
-        lift.runToTarget("mtrLift", -200,0.5);
+        lift.runToTarget("mtrLift", -200,0.5,true);
         lift.setServoPosition("srvClampLeft", leftOpen);
         lift.setServoPosition("srvClampRight", rightOpen);
         lift.setServoPower("srvRotator", rotatorOpen);
@@ -150,7 +150,7 @@ public class Auto extends OpMode {
 
         lift.WaitForFlag("In Position");
 
-        lift.runToTarget("mtrLift",200,0.5);
+        lift.runToTarget("mtrLift",200,0.5,true);
         lift.setServoPosition("srvClampLeft", leftClosed);
         lift.setServoPosition("srvClampRight", rightClosed);
 
@@ -181,7 +181,7 @@ public class Auto extends OpMode {
             drive.translate(-87, 0.5, 23);
 
             lift.WaitForFlag("Raise");
-            lift.runToTarget("mtrLift",-400,0.5);
+            lift.runToTarget("mtrLift",-400,0.5,true);
 
             if(returnPath.equals("wall")){
                drive.translate(180,0.5,24);
@@ -200,7 +200,7 @@ public class Auto extends OpMode {
             drive.SetFlag(lift,"DropLift");
 
             lift.WaitForFlag("DropLift");
-            lift.runToTarget("mtrLift",400,0.5);
+            lift.runToTarget("mtrLift",400,0.5,true);
 
             drive.translate(0,0.5,5);
             //Close Foundation Grabbers
