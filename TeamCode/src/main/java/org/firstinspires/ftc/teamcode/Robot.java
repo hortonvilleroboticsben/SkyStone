@@ -106,6 +106,11 @@ class   Robot{
     HandlerThread handlerThread;
 
 
+    double safeSpeed = .65;
+    double leftOpen = .3, leftClosed = .19;
+    double rightOpen = .19, rightClosed = .28;
+    double rotatorOpen = .15, rotatorClosed = .8;
+    double foundDown = .2, foundUp = .8;
 
     public Map<String, DcMotor> motors;
     public Map<String, Object> servos;
@@ -346,7 +351,7 @@ class   Robot{
     }
 
     public Boolean hasMotorEncoderReached( String motorName, int encoderCount) {
-        return (motors.get(motorName) != null) ? Math.abs(getEncoderCounts(motorName)) >= Math.abs(encoderCount)-5 : null;
+        return (motors.get(motorName) != null) ? Math.abs(getEncoderCounts(motorName)) >= Math.abs(encoderCount)-20 : null;
          }
 
     //METHOD TO BE CALLED UPON COMPLETION OF AN AUTONOMOUS PROGRAM IF ENCODERS ARE DESIRED TO BE RESET
