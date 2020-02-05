@@ -120,7 +120,7 @@ class StateMachine{
                 moveInit = false;
             }
             initRunToTarget(motorName,target,power);
-            if ((rbt.motors.get(motorName) != null) && (rbt.getEncoderCounts(motorName) != target-20 || rbt.getEncoderCounts(motorName) != target+20)) {
+            if ((rbt.motors.get(motorName) != null) && (Math.abs(rbt.getEncoderCounts(motorName)) >= Math.abs(target)-20)) {
                 rbt.setPower(motorName,0);
                 if(reset) rbt.resetEncoder(motorName);
                 rbt.setRunMode(motorName, DcMotor.RunMode.RUN_USING_ENCODER);
@@ -164,11 +164,7 @@ class StateMachine{
                 moveInit = false;
             }
 
-            if ((rbt.hasMotorEncoderReached(wheelSet1[0], wheelSetEncoder1+10)
-                    || rbt.hasMotorEncoderReached(wheelSet1[0], wheelSetEncoder1-10))
-                    && (rbt.hasMotorEncoderReached(rbt.wheelSet2[0], wheelSetEncoder2+10)
-                    || rbt.hasMotorEncoderReached(wheelSet2[0], wheelSetEncoder2-10)
-                    )) {
+            if ((rbt.hasMotorEncoderReached(wheelSet1[0], wheelSetEncoder1) && (rbt.hasMotorEncoderReached(rbt.wheelSet2[0], wheelSetEncoder2)))) {
                 Log.d("ENC_TRANSLATE", String.format("(%d,%d) / (%d,%d)",
                         rbt.getEncoderCounts(wheelSet1[0]),
                         rbt.getEncoderCounts(rbt.wheelSet2[0]),
