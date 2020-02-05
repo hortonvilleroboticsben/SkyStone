@@ -113,23 +113,18 @@ class StateMachine{
         }
     }
 
-    public void runToTarget(String motorName, int target, double power) {
+    public void runToTarget(String motorName, int target, double power, boolean reset) {
         if(next_state_to_execute()) {
-            if (rbt.motors.get(motorName) != null) {
-                rbt.setTarget(motorName, target);
-                rbt.setPower(motorName, power);
-            } else {
-                Log.e(TAG, "initRunToTarget: failed to run motor: " + motorName + " to target: " + target + " at power: " + power);
-            }
-
-            if ((rbt.hasMotorEncoderReached(motorName, +10)
-                    || rbt.hasMotorEncoderReached(motorName, -10))) {
-
-                rbt.setPower(motorName,0);
-
+            if(moveInit && reset){
                 rbt.resetEncoder(motorName);
-
+                moveInit = false;
+            }
+            initRunToTarget(motorName,target,power);
+            if ((rbt.motors.get(motorName) != null) && (rbt.getEncoderCounts(motorName) != target-20 || rbt.getEncoderCounts(motorName) != target+20)) {
+                rbt.setPower(motorName,0);
+                if(reset) rbt.resetEncoder(motorName);
                 rbt.setRunMode(motorName, DcMotor.RunMode.RUN_USING_ENCODER);
+                moveInit = true;
                 incrementState();
             }
 

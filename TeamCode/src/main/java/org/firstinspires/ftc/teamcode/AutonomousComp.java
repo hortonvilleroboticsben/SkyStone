@@ -24,11 +24,6 @@ public class AutonomousComp extends OpMode {
     StateMachine vision = new StateMachine();
     StateMachine multitask = new StateMachine();
     boolean OSFound, OSColor = false;
-    double safeSpeed = .65;
-    double leftOpen = .3, leftClosed = .18;
-    double rightOpen = .19, rightClosed = .4;
-    double rotatorOpen = .2, rotatorClosed = .8;
-    double foundDown = .2, foundUp = .8;
     boolean waitOS, confirmOS = false;
     boolean selOS = false;
     Timer t = new Timer();
@@ -146,22 +141,22 @@ public class AutonomousComp extends OpMode {
 
 // -------------------------------- < BLUE & LOADING SIDE > ----------------------------------------
 
-                sm.translate(90, safeSpeed, 26);
-                sm.rotate(-90, safeSpeed);
+                sm.translate(90, r.safeSpeed, 26);
+                sm.rotate(-90, r.safeSpeed);
 
-                sm.setServoPosition("srvClampLeft", leftOpen);
-                sm.setServoPosition("srvClampRight", rightOpen);
-                sm.setServoPower("srvRotator", rotatorOpen);
+                sm.setServoPosition("srvClampLeft", r.leftOpen);
+                sm.setServoPosition("srvClampRight", r.rightOpen);
+                sm.setServoPower("srvRotator", r.rotatorOpen);
 
                 switch (placement) {
                     case 1:
-                        sm.translate(-140, safeSpeed, 8);
+                        sm.translate(-140, r.safeSpeed, 8);
                         break;
                     case 2:
-                        sm.translate(160, safeSpeed, 8);
+                        sm.translate(160, r.safeSpeed, 8);
                         break;
                     case 3:
-                        sm.translate(110, safeSpeed, 12);
+                        sm.translate(110, r.safeSpeed, 12);
                         break;
                 }// End of Switch Statement
 
@@ -169,23 +164,23 @@ public class AutonomousComp extends OpMode {
 
                 sm.pause(500);
 
-                sm.setServoPosition("srvClampRight", rightClosed);
-                sm.setServoPosition("srvClampLeft", leftClosed);
+                sm.setServoPosition("srvClampRight", r.rightClosed);
+                sm.setServoPosition("srvClampLeft", r.leftClosed);
 
                 sm.pause(500);
 
                 if (returnPath.equals("not_wall")) {
-                    sm.translate(-87, safeSpeed, 73);
+                    sm.translate(-87, r.safeSpeed, 73);
                     if (!apMoveFoundation) {
-                        sm.translate(0, safeSpeed, 2);
+                        sm.translate(0, r.safeSpeed, 2);
                     }
                 } else { //returnPath.equals("wall");
-                    sm.translate(0, safeSpeed, 27);
-                    sm.translate(-87, safeSpeed, 67);
+                    sm.translate(0, r.safeSpeed, 27);
+                    sm.translate(-87, r.safeSpeed, 67);
                     sm.SetFlag(multitask,"Start");
-
+                    //TODO: This flag isnt in the "not_wall"
                     if (!apMoveFoundation) {
-                        sm.translate(180, safeSpeed, 20); //DRIVE TO FOUNDATION
+                        sm.translate(180, r.safeSpeed, 20); //DRIVE TO FOUNDATION
                     }
                 }
 
@@ -210,10 +205,10 @@ public class AutonomousComp extends OpMode {
                     multitask.incrementState();
                 }
 
-                sm.translate(180, safeSpeed-.1, 6);
+                sm.translate(180, r.safeSpeed-.1, 6);
 
-                sm.setServoPosition("srvClampLeft", leftOpen);
-                sm.setServoPosition("srvClampRight", rightOpen);
+                sm.setServoPosition("srvClampLeft", r.leftOpen);
+                sm.setServoPosition("srvClampRight", r.rightOpen);
 
                 if(multitask.next_state_to_execute()){
                     if(r.hasMotorEncoderReached("mtrLift", -200)){
@@ -226,18 +221,18 @@ public class AutonomousComp extends OpMode {
 
                 sm.WaitForFlag("Done");
 
-                sm.translate(0, safeSpeed, 2.5);
+                sm.translate(0, r.safeSpeed, 2.5);
 
                 //get foundation
 
                 if (!apMoveFoundation) {
-                    sm.rotate(-95, safeSpeed);
-                    sm.translate(-90,safeSpeed,2);
-                    sm.translate(0, safeSpeed, 15.5);
-                    sm.setServoPower("srvFound", foundDown);
+                    sm.rotate(-95, r.safeSpeed);
+                    sm.translate(-90,r.safeSpeed,2);
+                    sm.translate(0, r.safeSpeed, 15.5);
+                    sm.setServoPower("srvFound", r.foundDown);
                     sm.pause(500);
                     sm.translate(90, .75, 50);
-                    sm.setServoPower("srvFound", foundUp);
+                    sm.setServoPower("srvFound", r.foundUp);
                 }
 
                 if(multitask.next_state_to_execute()){
@@ -262,19 +257,19 @@ public class AutonomousComp extends OpMode {
 // - - - - - - - - - - - - - - - - - - - | Park Under Bridge | - - - - - - - - - - - - - - - -
                 if (returnPath.equals("wall")) {
 
-                    sm.translate(175, safeSpeed, 52.5);
-                    sm.setServoPosition("srvClampRight", rightOpen);
-                    sm.setServoPosition("srvClampLeft", leftOpen);
+                    sm.translate(175, r.safeSpeed, 52.5);
+                    sm.setServoPosition("srvClampRight", r.rightOpen);
+                    sm.setServoPosition("srvClampLeft", r.leftOpen);
 
                 } else if (returnPath.equals("not_wall")) {
 
-                    sm.translate(175, safeSpeed, 52.5);
+                    sm.translate(175, r.safeSpeed, 52.5);
 //                    sm.setServoPosition("srvClampRight", .1);
 //                    sm.setServoPosition("srvClampLeft", .3);
-                    sm.translate(-90, safeSpeed, 24);
-                    sm.translate(180, safeSpeed, 5);
-                    sm.setServoPosition("srvClampRight", rightClosed);
-                    sm.setServoPosition("srvClampLeft", leftClosed);
+                    sm.translate(-90, r.safeSpeed, 24);
+                    sm.translate(180, r.safeSpeed, 5);
+                    sm.setServoPosition("srvClampRight", r.rightClosed);
+                    sm.setServoPosition("srvClampLeft", r.leftClosed);
 
                 }
 
@@ -282,11 +277,11 @@ public class AutonomousComp extends OpMode {
                 if (skyStones == 2) { //GOING FOR SECOND SKYSTONE
                     switch (placement) {
                         case 1:
-                            sm.translate(175, safeSpeed, 52.5);
+                            sm.translate(175, r.safeSpeed, 52.5);
                             if (returnPath.equals("wall")) {
-                                sm.translate(-90, safeSpeed, 5);
-                                sm.rotate(90, safeSpeed);
-                                sm.translate(180, safeSpeed, 25);
+                                sm.translate(-90, r.safeSpeed, 5);
+                                sm.rotate(90, r.safeSpeed);
+                                sm.translate(180, r.safeSpeed, 25);
                             } else {
                                 //Get enough space to rotate into the stone
                             }
@@ -308,41 +303,41 @@ public class AutonomousComp extends OpMode {
 
                 //TODO: Edit these values
 
-                sm.translate(90, safeSpeed, 26);
-                sm.rotate(-90, safeSpeed);
+                sm.translate(90, r.safeSpeed, 26);
+                sm.rotate(-90, r.safeSpeed);
 
-                sm.setServoPosition("srvClampLeft", leftOpen);
-                sm.setServoPosition("srvClampRight", rightOpen);
-                sm.setServoPower("srvRotator", rotatorOpen);
+                sm.setServoPosition("srvClampLeft", r.leftOpen);
+                sm.setServoPosition("srvClampRight", r.rightOpen);
+                sm.setServoPower("srvRotator", r.rotatorOpen);
 
                 switch (placement) {
                     case 1:
-                        sm.translate(140, safeSpeed, 8);
+                        sm.translate(140, r.safeSpeed, 8);
                         break;
                     case 2:
-                        sm.translate(160, safeSpeed, 8);
+                        sm.translate(160, r.safeSpeed, 8);
                         break;
                     case 3:
-                        sm.translate(110, safeSpeed, 12);
+                        sm.translate(110, r.safeSpeed, 12);
                         break;
                 }// End of Switch Statement
 
-                sm.setServoPosition("srvClampLeft", leftClosed);
-                sm.setServoPosition("srvClampRight", rightClosed);
+                sm.setServoPosition("srvClampLeft", r.leftClosed);
+                sm.setServoPosition("srvClampRight", r.rightClosed);
 
 
                 if (returnPath.equals("not_wall")) {
-                    sm.translate(82, safeSpeed, 73); //90 is for good
+                    sm.translate(82, r.safeSpeed, 73); //90 is for good
 
                     if (!apMoveFoundation) {
-                        sm.translate(180, safeSpeed, 6); //DRIVE TO FOUNDATION
+                        sm.translate(180, r.safeSpeed, 6); //DRIVE TO FOUNDATION
                     }
                 } else { //returnPath.equals("wall");
-                    sm.translate(0, safeSpeed, 25);
-                    sm.translate(82, safeSpeed, 73); //90 is for good
+                    sm.translate(0, r.safeSpeed, 25);
+                    sm.translate(82, r.safeSpeed, 73); //90 is for good
 
                     if (!apMoveFoundation) {
-                        sm.translate(180, safeSpeed, 20); //DRIVE TO FOUNDATION
+                        sm.translate(180, r.safeSpeed, 20); //DRIVE TO FOUNDATION
                     }
 
                 }
@@ -372,24 +367,24 @@ public class AutonomousComp extends OpMode {
 
                 sm.WaitForFlag("Done");
 
-                sm.translate(0, safeSpeed-.1, 2.5);
+                sm.translate(0, r.safeSpeed-.1, 2.5);
 
-                sm.translate(180, safeSpeed-.1, 2);
+                sm.translate(180, r.safeSpeed-.1, 2);
 
-                sm.setServoPosition("srvClampRight", rightOpen);
-                sm.setServoPosition("srvClampLeft", leftOpen);
+                sm.setServoPosition("srvClampRight", r.rightOpen);
+                sm.setServoPosition("srvClampLeft", r.leftOpen);
 
                 sm.pause(500);
 
 // - - - - - - - - - - - - - - - - - - - | GRAB FOUNDATION | - - - - - - - - - - - - - - - - - - -
 
                 if (!apMoveFoundation) {
-                    sm.rotate(-90, safeSpeed);
-                    sm.translate(180, safeSpeed, 15.5);
-                    sm.setServoPosition("srvFound", foundDown);
+                    sm.rotate(-90, r.safeSpeed);
+                    sm.translate(180, r.safeSpeed, 15.5);
+                    sm.setServoPosition("srvFound", r.foundDown);
                     sm.pause(500);
                     sm.translate(90, .75, 50);
-                    sm.setServoPosition("srvFound", foundUp);
+                    sm.setServoPosition("srvFound", r.foundUp);
                 }
 
 // - - - - - - - - - - - - - - - - - - - | LOWER LIFT | - - - - - - - - - - - - - - - - - - - - - -
@@ -416,24 +411,24 @@ public class AutonomousComp extends OpMode {
 // *************************************** | PARK UNDER BRIDGE | ***********************************
 
                 if (returnPath.equals("wall")) {
-                    sm.translate(0, safeSpeed, 52.5);
+                    sm.translate(0, r.safeSpeed, 52.5);
                 } else if (returnPath.equals("not_wall")) {
-                    sm.translate(0, safeSpeed, 45);
-                    sm.translate(-90, safeSpeed, 24);
-                    sm.translate(0, safeSpeed, 2);
+                    sm.translate(0, r.safeSpeed, 45);
+                    sm.translate(-90, r.safeSpeed, 24);
+                    sm.translate(0, r.safeSpeed, 2);
                 }
 
-                sm.setServoPosition("srvClampLeft", leftOpen);
-                sm.setServoPosition("srvClampRight", rightOpen);
+                sm.setServoPosition("srvClampLeft", r.leftOpen);
+                sm.setServoPosition("srvClampRight", r.rightOpen);
 
 //                if (skyStones == 2) { //GOING FOR SECOND SKYSTONE
 //                    switch (placement) {
 //                        case 1:
-//                            sm.translate(175, safeSpeed, 52.5);
+//                            sm.translate(175, r.safeSpeed, 52.5);
 //                            if (returnPath.equals("wall")) {
-//                                sm.translate(-90, safeSpeed, 5);
-//                                sm.rotate(90, safeSpeed);
-//                                sm.translate(180, safeSpeed, 25);
+//                                sm.translate(-90, r.safeSpeed, 5);
+//                                sm.rotate(90, r.safeSpeed);
+//                                sm.translate(180, r.safeSpeed, 25);
 //                            } else {
 //                                //Get enough space to rotate into the stone
 //                            }
@@ -458,24 +453,24 @@ public class AutonomousComp extends OpMode {
 //...................................<BLUE & BUILDING SIDE>.................................
 
                 if (!apMoveFoundation) { // MOVE THE FOUNDATION
-                    sm.translate(-90, safeSpeed, 28);
-                    sm.setServoPosition("srvFound", foundDown);
+                    sm.translate(-90, r.safeSpeed, 28);
+                    sm.setServoPosition("srvFound", r.foundDown);
                     sm.pause(500);
                     sm.translate(90, .75, 50);
-                    sm.setServoPosition("srvFound", foundUp);
+                    sm.setServoPosition("srvFound", r.foundUp);
 
                 }
 
 //- - - - - - - - - - - - - - - - - - | Park Under Bridge | - - - - - - - - - - - - - - - - -
 
                 if (returnPath.equals("not_wall")) {
-                    sm.translate(175, safeSpeed, 25);
-                    sm.translate(-135, safeSpeed, 25);
-                    sm.translate(180, safeSpeed, 9);
+                    sm.translate(175, r.safeSpeed, 25);
+                    sm.translate(-135, r.safeSpeed, 25);
+                    sm.translate(180, r.safeSpeed, 9);
 
                 } else { //returnPath.equals("wall");
 
-                    sm.translate(175, safeSpeed, 50.5);
+                    sm.translate(175, r.safeSpeed, 50.5);
                 }
 
             } else { // ALLIANCE COLOR === RED
@@ -483,27 +478,27 @@ public class AutonomousComp extends OpMode {
 //........................................<RED & BUILDING SIDE>..............................
 
                 if (!apMoveFoundation) { // MOVE THE FOUNDATION
-                    sm.translate(-90, safeSpeed, 28);
-                    sm.setServoPosition("srvFound", foundDown);
+                    sm.translate(-90, r.safeSpeed, 28);
+                    sm.setServoPosition("srvFound", r.foundDown);
                     sm.pause(500);
                     sm.translate(90, .75, 50);
-                    sm.setServoPosition("srvFound", foundUp);
+                    sm.setServoPosition("srvFound", r.foundUp);
 
                 }
 
 //- - - - - - - - - - - - - - - - - - | Park Under Bridge | - - - - - - - - - - - - - - - - -
 
                 if (returnPath.equals("not_wall")) {
-                    sm.translate(175, safeSpeed, 25);
-                    sm.translate(-135, safeSpeed, 25);
-                    sm.translate(180, safeSpeed, 9);
+                    sm.translate(175, r.safeSpeed, 25);
+                    sm.translate(-135, r.safeSpeed, 25);
+                    sm.translate(180, r.safeSpeed, 9);
 
                 } else { //returnPath.equals("wall");
-                    sm.translate(175, safeSpeed, 50.5);
+                    sm.translate(175, r.safeSpeed, 50.5);
                 }
 
-                sm.setServoPosition("srvClampLeft", leftOpen);
-                sm.setServoPosition("srvClampRight", rightOpen);
+                sm.setServoPosition("srvClampLeft", r.leftOpen);
+                sm.setServoPosition("srvClampRight", r.rightOpen);
 
 //......................................<COLOR SENSORS>.....................................
 
