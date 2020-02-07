@@ -49,15 +49,15 @@ public class ImageAnalyzer extends OpMode {
 
     public int[] analyze(File filename) {
         telemetry.addData("ImageAnalyzer: ", "true");
-        //while(!filename.exists() || !filename.canWrite());
-        /*try{
+//        while(!filename.exists() || !filename.canWrite());
+        try{
             while (!filename.exists() || !filename.canWrite()){
                 TimeUnit.MILLISECONDS.sleep(100);
 
             }
         } catch (InterruptedException e ){
             Log.v("HELLO", e+"");
-        }*/
+        }
         String filenameString = filename.getPath();
         Bitmap image = null;
         try {

@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package org.firstinspires.ftc.robotcontroller.internal;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -38,6 +39,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -70,6 +72,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Size;
 import android.view.Menu;
@@ -172,6 +176,8 @@ public class FtcRobotControllerActivity extends Activity
     public TextureView imageView;
 
     TextView averages, heightTV, widthTV;
+
+    ImageReader reader;
 
     CameraDevice cameraDevice;
     String cameraId;
@@ -318,6 +324,8 @@ public class FtcRobotControllerActivity extends Activity
     if (enforcePermissionValidator()) {
       return;
     }
+
+    checkPermissions();
 
     setContentView(R.layout.activity_ftc_controller);
 
@@ -990,7 +998,7 @@ public class FtcRobotControllerActivity extends Activity
         height = jpegSize[0].getHeight();
       }
 
-      ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
+      reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
       List<Surface> outputSurface = new ArrayList<>(2);
       outputSurface.add(reader.getSurface());
 
@@ -1262,4 +1270,38 @@ public class FtcRobotControllerActivity extends Activity
         canvas.drawCircle(x / 2, y / 2, radius, paint);
       }
     }
+
+    String[] permissions = new String[]{
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA
+    };
+
+    private boolean checkPermissions() {
+      int result;
+      List<String> listPermissionsNeeded = new ArrayList<>();
+      for (String p : permissions) {
+        result = ContextCompat.checkSelfPermission(this, p);
+        if (result != PackageManager.PERMISSION_GRANTED) {
+          listPermissionsNeeded.add(p);
+        }
+      }
+      if (!listPermissionsNeeded.isEmpty()) {
+        ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), 100);
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+      if (requestCode == 100) {
+        if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+          // do something
+        }
+        return;
+      }
+    }
+
 }
