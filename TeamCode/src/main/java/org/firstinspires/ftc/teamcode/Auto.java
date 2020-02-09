@@ -136,14 +136,14 @@ public class Auto extends OpMode {
                 lift.setServoPosition("srvClampLeft", leftOpen + .3);
                 lift.setServoPosition("srvClampRight", rightOpen);
                 //lift.pause(500);
-                lift.runToTarget("mtrLift", -200,0.6,true);
+                lift.runToTarget("mtrLift", -150,0.6,true);
 
                 drive.translate(90, 0.5, 26);
                 drive.rotate(-90, 0.5);
 
                 switch (placement) {
                     case 1:
-                        drive.translate(-180, 0.5, 5);
+                        drive.translate(-155, 0.5, 3.8);
                         break;
                     case 2:
                         drive.translate(160, 0.5, 8);
@@ -157,10 +157,11 @@ public class Auto extends OpMode {
 
                 lift.WaitForFlag("In Position");
 
-                lift.runToTarget("mtrLift", 200, 0.6, true);
+                lift.runToTarget("mtrLift", 120, 0.6, true);
                 lift.setServoPosition("srvClampLeft", leftClosed);
                 lift.setServoPosition("srvClampRight", rightClosed);
-
+                lift.pause(500);
+                //lift.runToTarget("mtrLift",-50,0.6,true);
                 lift.SetFlag(drive, "Grabbed");
 
                 drive.WaitForFlag("Grabbed");
@@ -177,10 +178,11 @@ public class Auto extends OpMode {
                 }
 //hi
                 if (returnPath.equals("wall")) {
-                    drive.translate(-5, 0.5, 18);
+                    drive.translate(-5, 0.5, 17);
                 }
+                drive.translate(-5,0.5,3);
                 //Drive to Under Bridge
-                drive.translate(-90, 0.5, 37);
+                drive.translate(-90, 0.5, 33);
 
                 drive.setServoPosition("srvFoundRight", foundRightUp);
                 drive.setServoPosition("srvFoundLeft", foundLeftUp);
@@ -188,15 +190,16 @@ public class Auto extends OpMode {
                 if (!apMoveFoundation) {
                     //If we are moving foundation 73
                     drive.SetFlag(lift, "Raise");
-                    drive.translate(-90, 0.5, 50);
+                    drive.translate(-90, 0.5, 55);
 
                     lift.WaitForFlag("Raise");
                     lift.runToTarget("mtrLift", -400, 0.6, true);
 
                     if (returnPath.equals("wall")) {
-                        drive.translate(180, 0.45, 26);
+                        drive.translate(180, 0.5, 16);
                     }
-                    drive.translate(180, 0.5, 2);
+                    //When we are not_wall path
+                    drive.translate(180, 0.5, 10);
                     drive.SetFlag(lift, "Place");
 
                     lift.WaitForFlag("Place");
@@ -206,7 +209,7 @@ public class Auto extends OpMode {
 
                     drive.WaitForFlag("Placed");
                     drive.translate(0, 0.5, 5);
-                    drive.rotate(190, 0.5);
+                    drive.rotate(180, 0.5);
 //                    drive.SetFlag(lift, "DropLift");
 
 //                    lift.WaitForFlag("DropLift");
@@ -220,18 +223,18 @@ public class Auto extends OpMode {
                     drive.setServoPosition("srvFoundRight", foundRightDown);
                     drive.setServoPosition("srvFoundLeft", foundLeftDown);
 
-                    drive.translate(180, 0.5, 33);
+                    drive.translate(180, 0.5, 38);
 
                     //Open Foundation Grabbers
 
                     drive.setServoPosition("srvFoundRight", foundRightUp);
                     drive.setServoPosition("srvFoundLeft", foundLeftUp);
 
-                    drive.translate(-90, 0.5, 30);
+                    drive.translate(-90, 0.5, 35);
                     if (returnPath.equals("wall")) {
                         drive.translate(-90, 0.5, 30);
                     } else {
-                        drive.translate(-30, 0.5, 50);
+                        drive.translate(-50, 0.5, 50);
                     }
 
                 }

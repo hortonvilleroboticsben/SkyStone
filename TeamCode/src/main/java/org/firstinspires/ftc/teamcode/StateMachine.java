@@ -117,9 +117,16 @@ class StateMachine{
         if(next_state_to_execute()) {
             if(moveInit && reset){
                 rbt.resetEncoder(motorName);
+                initRunToTarget(motorName, target, power);
+//                rbt.setRunMode(motorName, DcMotor.RunMode.RUN_USING_ENCODER);
+                moveInit = false;
+            }else{
+                initRunToTarget(motorName,target,power);
+//                rbt.setRunMode(motorName, DcMotor.RunMode.RUN_USING_ENCODER);
                 moveInit = false;
             }
-            initRunToTarget(motorName,target,power);
+//            initRunToTarget(motorName,target,power);
+
             if ((rbt.motors.get(motorName) != null) && !rbt.motors.get(motorName).isBusy()||(Math.abs(rbt.getEncoderCounts(motorName)) >= Math.abs(target)-20)) {
                 rbt.setPower(motorName,0);
                 if(reset) rbt.resetEncoder(motorName);

@@ -114,7 +114,7 @@ class   Robot{
     double rotatorOpen = .15, rotatorClosed = .8;
     double foundDown = .2, foundUp = .8;
 
-    public Map<String, DcMotorEx> motors;
+    public Map<String, DcMotor> motors;
     public Map<String, Object> servos;
     public Map<String, Object> sensors;
     List<String> flags = new ArrayList<>();
@@ -159,8 +159,7 @@ class   Robot{
         try {
             for (String[] m : mtrList) {
                 DcMotorEx holder = (DcMotorEx) op.hardwareMap.dcMotor.get(m[0]);
-                holder.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(10,0.05,0,0));
-                holder.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(10,3,0,0));
+                holder.setVelocityPIDFCoefficients(10,3,0,0);
                 if (m[1].equals("R")) holder.setDirection(DcMotorSimple.Direction.REVERSE);
                 else if (m[1].equals("F")) holder.setDirection(DcMotorSimple.Direction.FORWARD);
                 else holder = null;
@@ -239,7 +238,7 @@ class   Robot{
         if (motors.get(motorName) != null) {
             motors.get(motorName).setTargetPosition(target);
             setRunMode(motorName, DcMotor.RunMode.RUN_TO_POSITION);
-
+//            motors.get(motorName).setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(10,0.05,0,0));
         }
     }
 
