@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 
@@ -60,6 +61,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
@@ -112,7 +114,7 @@ class   Robot{
     double rotatorOpen = .15, rotatorClosed = .8;
     double foundDown = .2, foundUp = .8;
 
-    public Map<String, DcMotor> motors;
+    public Map<String, DcMotorEx> motors;
     public Map<String, Object> servos;
     public Map<String, Object> sensors;
     List<String> flags = new ArrayList<>();
@@ -156,7 +158,9 @@ class   Robot{
 
         try {
             for (String[] m : mtrList) {
-                DcMotor holder = op.hardwareMap.dcMotor.get(m[0]);
+                DcMotorEx holder = (DcMotorEx) op.hardwareMap.dcMotor.get(m[0]);
+                holder.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(10,0.05,0,0));
+                holder.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(10,3,0,0));
                 if (m[1].equals("R")) holder.setDirection(DcMotorSimple.Direction.REVERSE);
                 else if (m[1].equals("F")) holder.setDirection(DcMotorSimple.Direction.FORWARD);
                 else holder = null;
