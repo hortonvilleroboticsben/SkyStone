@@ -137,7 +137,8 @@ class   Robot{
             {"srvClampLeft","p"},
             {"srvClampRight","p"},
             {"srvRotator","p"},
-            {"srvFound","p"},
+            {"srvFoundLeft","p"},
+            {"srvFoundRight", "p"},
     };
     static String[] wheelSet1 = {"mtrFrontLeft", "mtrBackRight"};
     static String[] wheelSet2 = {"mtrFrontRight", "mtrBackLeft"};
@@ -351,8 +352,8 @@ class   Robot{
     }
 
     public Boolean hasMotorEncoderReached( String motorName, int encoderCount) {
-        return (motors.get(motorName) != null) ? Math.abs(getEncoderCounts(motorName)) >= Math.abs(encoderCount)-20 : null;
-         }
+        return (motors.get(motorName) != null) ? Math.abs(getEncoderCounts(motorName)) >= Math.abs(encoderCount)-30 : null;
+    }
 
     //METHOD TO BE CALLED UPON COMPLETION OF AN AUTONOMOUS PROGRAM IF ENCODERS ARE DESIRED TO BE RESET
     public void finish() {

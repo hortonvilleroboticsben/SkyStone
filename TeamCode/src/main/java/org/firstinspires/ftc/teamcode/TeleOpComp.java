@@ -10,11 +10,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class TeleOpComp extends OpMode {
 
     Robot r;
-    Servo srvClampRight, srvClampLeft, srvFound, srvRotator;
+    Servo srvClampRight, srvClampLeft, srvFoundLeft, srvFoundRight, srvRotator;
     public boolean auto = false;
     StateMachine m = new StateMachine();
     double theta1 = 0;
-    boolean OSClamp, OSClampRight, openClampRight, openClamp, OSRotator, inRotator, OSFound, downFound = false;
+    boolean OSClamp, OSClampRight, openClampRight, openClamp, OSRotator, inRotator, OSFoundGrabbers, usingFoundGrabbers = false;
     int liftEnc = 0;
 
     @Override
@@ -24,7 +24,8 @@ public class TeleOpComp extends OpMode {
             srvClampLeft = hardwareMap.servo.get("srvClampLeft");
             srvClampRight = hardwareMap.servo.get("srvClampRight");
             srvRotator = hardwareMap.servo.get("srvRotator");
-            srvFound = hardwareMap.servo.get("srvFound");
+            srvFoundLeft = hardwareMap.servo.get("srvFoundLeft");
+            srvFoundRight = hardwareMap.servo.get("srvFoundRight");
         }catch (Exception e){}
         m.state_in_progress = 99;
         r = Robot.getInstance();
@@ -113,17 +114,21 @@ public class TeleOpComp extends OpMode {
                 r.setServoPosition("srvClampRight", .3);
             }
 
-            //Foundation Clip.......................................................................
-            if(gamepad2.y && !OSFound){
-                OSFound = true;
-                downFound = !downFound;
-            } else if (!gamepad2.y) OSFound = false;
+            //Foundation Clips.......................................................................
+            if(gamepad2.y && !OSFoundGrabbers){
+                OSFoundGrabbers = true;
+                usingFoundGrabbers = !usingFoundGrabbers;
+            } else if(!gamepad1.a) OSFoundGrabbers = false;
 
-            if(downFound){
-                r.setServoPosition("srvFound",.2);
+            if(usingFoundGrabbers){
+                r.setServoPosition("srvFoundLeft", .85);
+                r.setServoPosition("srvFoundRight", .9);
             } else {
-                r.setServoPosition("srvFound",.7);
+                r.setServoPosition("srvFoundLeft", .1);
+                r.setServoPosition("srvFoundRight", .3);
             }
+
+            telemetry.addData("FOUNDATION GRABBERS DOWN: ", usingFoundGrabbers);
 
             //Rotator...............................................................................
 
@@ -182,7 +187,8 @@ public class TeleOpComp extends OpMode {
         telemetry.addData("Left Clamp Position:",srvClampLeft.getPosition());
         telemetry.addData("Right Clamp Position:",srvClampRight.getPosition());
         telemetry.addData("Rotator Position:",srvRotator.getPosition());
-        telemetry.addData("Foundation Position:",srvFound.getPosition());
+        telemetry.addData("Foundation Left Position:",srvFoundLeft.getPosition());
+        telemetry.addData("Foundation Right Position:", srvFoundRight.getPosition());
 
 
         telemetry.addData("theta1", theta1 * 180 / Math.PI);

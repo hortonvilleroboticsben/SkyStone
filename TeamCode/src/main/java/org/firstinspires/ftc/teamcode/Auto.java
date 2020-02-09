@@ -36,7 +36,8 @@ public class Auto extends OpMode {
     double leftOpen = .3, leftClosed = .18;
     double rightOpen = .19, rightClosed = .4;
     double rotatorOpen = .1, rotatorClosed = .8;
-    double foundDown = .2, foundUp = .8;
+    double foundLeftDown = .1, foundLeftUp = .4;
+    double foundRightDown = .3, foundRightUp = .85;
 
     int[] vsData = null;
 
@@ -115,7 +116,8 @@ public class Auto extends OpMode {
 
         int[] temp = vision.getVisionData();
         vsData = temp == null ? vsData : temp;
-        final int placement = allianceColor.equals("red") ? (5-vsData[0])%3 + 1 : vsData[0];
+//        final int placement = allianceColor.equals("red") ? (5-vsData[0])%3 + 1 : vsData[0];
+        final int placement = 1;
         telemetry.addData("Placement: ", placement + "");
 
         vision.SetFlag(drive, "Vision Done");
@@ -125,94 +127,233 @@ public class Auto extends OpMode {
 
         drive.WaitForFlag("Vision Done");
 
-        //lift.WaitForFlag("Vision Done");
-        lift.setServoPower("srvRotator", rotatorOpen);
-        lift.setServoPosition("srvClampLeft", leftOpen+.3);
-        lift.setServoPosition("srvClampRight", rightOpen);
-        //lift.pause(500);
-        lift.runToTarget("mtrLift", -200,0.5,true);
+        if(allianceColor.equals("blue")) {
 
-        drive.translate(90,0.5,26);
-        drive.rotate(-90,0.5);
+            if(loadingSideStart) { //BLUE & LOADING SIDE
 
-        switch (placement) {
-            case 1:
-                drive.translate(-160, 0.5, 8.1);
-                break;
-            case 2:
-                drive.translate(160, 0.5, 8);
-                break;
-            case 3:
-                drive.translate(100, 0.5, 12.1);
-                break;
-        }
+                //lift.WaitForFlag("Vision Done");
+                lift.setServoPower("srvRotator", rotatorOpen);
+                lift.setServoPosition("srvClampLeft", leftOpen + .3);
+                lift.setServoPosition("srvClampRight", rightOpen);
+                //lift.pause(500);
+                lift.runToTarget("mtrLift", -200,0.6,true);
 
-        drive.SetFlag(lift, "In Position");
+                drive.translate(90, 0.5, 26);
+                drive.rotate(-90, 0.5);
 
-        lift.WaitForFlag("In Position");
+                switch (placement) {
+                    case 1:
+                        drive.translate(-180, 0.5, 5);
+                        break;
+                    case 2:
+                        drive.translate(160, 0.5, 8);
+                        break;
+                    case 3:
+                        drive.translate(100, 0.5, 17);
+                        break;
+                }
 
-        lift.runToTarget("mtrLift",200,0.5,true);
-        lift.setServoPosition("srvClampLeft", leftClosed);
-        lift.setServoPosition("srvClampRight", rightClosed);
+                drive.SetFlag(lift, "In Position");
 
-        lift.SetFlag(drive, "Grabbed");
+                lift.WaitForFlag("In Position");
 
-        drive.WaitForFlag("Grabbed");
+                lift.runToTarget("mtrLift", 200, 0.6, true);
+                lift.setServoPosition("srvClampLeft", leftClosed);
+                lift.setServoPosition("srvClampRight", rightClosed);
 
-        drive.translate(0,0.5,5);
+                lift.SetFlag(drive, "Grabbed");
 
-        switch(placement){//Move to skyStone pos 1 even if we are at pos 2 || 3
-            case 2:
-                drive.translate(-85,0.5,8);
-                break;
-            case 3:
-                drive.translate(-85,0.5,16);
-                break;
-        }
+                drive.WaitForFlag("Grabbed");
+
+                drive.translate(0, 0.5, 5);
+
+                switch (placement) {//Move to skyStone pos 1 even if we are at pos 2 || 3
+                    case 2:
+                        drive.translate(-85, 0.5, 8);
+                        break;
+                    case 3:
+                        drive.translate(-85, 0.5, 16);
+                        break;
+                }
 //hi
-        if(returnPath.equals("wall")) {
-            drive.translate(0, 0.5, 18);
-        }
-        //Drive to Under Bridge
-        drive.translate(-85,0.5,50);
+                if (returnPath.equals("wall")) {
+                    drive.translate(-5, 0.5, 18);
+                }
+                //Drive to Under Bridge
+                drive.translate(-90, 0.5, 37);
 
-        if(!apMoveFoundation) {
-            //If we are moving foundation 73
-            drive.SetFlag(lift,"Raise");
-            drive.translate(-85, 0.5, 23);
+                drive.setServoPosition("srvFoundRight", foundRightUp);
+                drive.setServoPosition("srvFoundLeft", foundLeftUp);
 
-            lift.WaitForFlag("Raise");
-            lift.runToTarget("mtrLift",-400,0.5,true);
+                if (!apMoveFoundation) {
+                    //If we are moving foundation 73
+                    drive.SetFlag(lift, "Raise");
+                    drive.translate(-90, 0.5, 50);
 
-            if(returnPath.equals("wall")){
-               drive.translate(180,0.5,24);
+                    lift.WaitForFlag("Raise");
+                    lift.runToTarget("mtrLift", -400, 0.6, true);
+
+                    if (returnPath.equals("wall")) {
+                        drive.translate(180, 0.45, 26);
+                    }
+                    drive.translate(180, 0.5, 2);
+                    drive.SetFlag(lift, "Place");
+
+                    lift.WaitForFlag("Place");
+                    lift.setServoPosition("srvClampLeft", leftOpen);
+                    lift.setServoPosition("srvClampRight", rightOpen);
+                    lift.SetFlag(drive, "Placed");
+
+                    drive.WaitForFlag("Placed");
+                    drive.translate(0, 0.5, 5);
+                    drive.rotate(190, 0.5);
+//                    drive.SetFlag(lift, "DropLift");
+
+//                    lift.WaitForFlag("DropLift");
+                    lift.setServoPosition("srvClampLeft", leftClosed-.08);
+                    lift.setServoPosition("srvRotator", rotatorClosed);
+                    lift.runToTarget("mtrLift", 400, 0.6, true);
+
+                    drive.translate(0, 0.5, 5);
+
+                    //Close Foundation Grabbers0
+                    drive.setServoPosition("srvFoundRight", foundRightDown);
+                    drive.setServoPosition("srvFoundLeft", foundLeftDown);
+
+                    drive.translate(180, 0.5, 33);
+
+                    //Open Foundation Grabbers
+
+                    drive.setServoPosition("srvFoundRight", foundRightUp);
+                    drive.setServoPosition("srvFoundLeft", foundLeftUp);
+
+                    drive.translate(-90, 0.5, 30);
+                    if (returnPath.equals("wall")) {
+                        drive.translate(-90, 0.5, 30);
+                    } else {
+                        drive.translate(-30, 0.5, 50);
+                    }
+
+                }
+            } else { //BLUE & BUILDING SIDE
+
+                //translate backwards at a small angle to prime position to grab foundation
+
+                //foundation servos
+
             }
-            drive.translate(180,0.5,2);
-            drive.SetFlag(lift,"Place");
 
-            lift.WaitForFlag("Place");
-            lift.setServoPosition("srvClampLeft",leftOpen);
-            lift.setServoPosition("srvClampRight",rightOpen);
-            lift.SetFlag(drive,"Placed");
+        } else {
 
-            drive.WaitForFlag("Placed");
-            drive.translate(0,0.5,5);
-            drive.rotate(180,0.5);
-            drive.SetFlag(lift,"DropLift");
+            if(loadingSideStart){ //RED & LOADING SIDE
 
-            lift.WaitForFlag("DropLift");
-            lift.setServoPosition("srvRotator",rotatorClosed);
-            lift.runToTarget("mtrLift",400,0.5,true);
+                //lift.WaitForFlag("Vision Done");
+                lift.setServoPower("srvRotator", rotatorOpen);
+                lift.setServoPosition("srvClampLeft", leftOpen + .3);
+                lift.setServoPosition("srvClampRight", rightOpen);
+                //lift.pause(500);
+//                lift.runToTarget("mtrLift", -200,0.5,true);
 
-            drive.translate(0,0.5,5);
-            //Close Foundation Grabbers
-            drive.translate(180,0.5,25);
-            //Open Foundation Grabbers
-            drive.translate(-90,0.5,25);
-            if(returnPath.equals("wall")){
-                drive.translate(-90,0.5,15);
-            } else {
-                drive.translate(-30,0.5,50);
+                drive.translate(90, 0.5, 26);
+                drive.rotate(-90, 0.5);
+
+                switch (placement) {
+                    case 1:
+                        drive.translate(-165, 0.5, 8.1);
+                        break;
+                    case 2:
+                        drive.translate(160, 0.5, 8);
+                        break;
+                    case 3:
+                        drive.translate(100, 0.5, 17);
+                        break;
+                }
+
+                drive.SetFlag(lift, "In Position");
+
+                lift.WaitForFlag("In Position");
+
+                lift.runToTarget("mtrLift", 200, 0.6, true);
+                lift.setServoPosition("srvClampLeft", leftClosed);
+                lift.setServoPosition("srvClampRight", rightClosed);
+
+                lift.SetFlag(drive, "Grabbed");
+
+                drive.WaitForFlag("Grabbed");
+
+                drive.translate(0, 0.5, 5);
+
+                switch (placement) {//Move to skyStone pos 1 even if we are at pos 2 || 3
+                    case 2:
+                        drive.translate(85, 0.5, 8);
+                        break;
+                    case 3:
+                        drive.translate(85, 0.5, 16);
+                        break;
+                }
+//hey der
+                if (returnPath.equals("wall")) {
+                    drive.translate(0, 0.5, 17.75);
+                }
+                //Drive to Under Bridge
+                drive.translate(85, 0.5, 39);
+
+                lift.setServoPosition("srvFoundRight", foundRightUp);
+                lift.setServoPosition("srvFoundLeft", foundLeftUp);
+
+                if (!apMoveFoundation) {
+                    //If we are moving foundation 73
+                    drive.SetFlag(lift, "Raise");
+                    drive.translate(85, 0.5, 46);
+
+                    lift.WaitForFlag("Raise");
+                    lift.runToTarget("mtrLift", -400, 0.6, true);
+
+                    if (returnPath.equals("wall")) {
+                        drive.translate(180, 0.5, 21);
+                    }
+                    drive.SetFlag(lift, "Place");
+
+                    lift.WaitForFlag("Place");
+                    lift.setServoPosition("srvClampLeft", leftOpen);
+                    lift.setServoPosition("srvClampRight", rightOpen);
+                    lift.SetFlag(drive, "Placed");
+
+                    drive.WaitForFlag("Placed");
+                    drive.translate(0, 0.5, 5);
+                    drive.rotate(180, 0.5);
+                    drive.SetFlag(lift, "DropLift");
+
+                    lift.WaitForFlag("DropLift");
+                    lift.setServoPosition("srvRotator", rotatorClosed);
+                    lift.runToTarget("mtrLift", 400, 0.6, true);
+
+                    drive.translate(0, 0.5, 5);
+
+                    //Close Foundation Grabbers
+                    drive.setServoPosition("srvFoundRight", foundRightDown);
+                    drive.setServoPosition("srvFoundLeft", foundLeftDown);
+
+                    drive.pause(250);
+
+                    drive.translate(180, 0.5, 28);
+
+                    //Open Foundation Grabbers
+
+                    drive.setServoPosition("srvFoundRight", foundRightUp);
+                    drive.setServoPosition("srvFoundLeft", foundLeftUp);
+
+                    drive.translate(90, 0.5, 25);
+                    if (returnPath.equals("wall")) {
+                        drive.translate(90, 0.5, 15);
+                    } else {
+                        drive.translate(30, 0.5, 50);
+                    }
+
+                }
+
+            } else { //RED & BUILDING SIDE
+
             }
 
         }
