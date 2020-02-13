@@ -119,7 +119,7 @@ public class ImageAnalyzer extends OpMode {
 //        DistortImageOps.rotate(layers, layers, BorderType.ZERO, InterpolationType.POLYNOMIAL4, 270);
         //for (int i = 0; i<layers.getNumBands();i++) ImageMiscOps.rotateCW(layers.getBand(i), layers.getBand(i));
         //ConvertBitmap.planarToBitmap(layers, bitmap, null);
-        bitmap = Bitmap.createBitmap(bitmap,50, 300,180,50);
+        bitmap = Bitmap.createBitmap(bitmap,50, 300,90,50);
         save(bitmap);
         //save(bitmap);
         width = bitmap.getWidth();
@@ -208,11 +208,11 @@ public class ImageAnalyzer extends OpMode {
 
         int pos = 666;
 
-        if(xAverages >= 0 && xAverages < 5*width/11) {
+        if(xAverages >= 0 && xAverages < 6*width/11) {
             //Toast.makeText(context, "2", Toast.LENGTH_LONG).show();
             pos =  2;
         }
-        if(xAverages >= 5*width/11 && xAverages < 7*width/11) {
+        if(xAverages >= 6   *width/11 && xAverages < 7*width/11) {
             //Toast.makeText(context, "3", Toast.LENGTH_LONG).show();
             pos =  3;
         }

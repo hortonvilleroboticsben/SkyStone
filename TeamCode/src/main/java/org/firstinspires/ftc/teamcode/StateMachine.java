@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 import static org.firstinspires.ftc.teamcode.Robot.wheelSet1;
 import static org.firstinspires.ftc.teamcode.Robot.wheelSet2;
@@ -126,7 +127,13 @@ class StateMachine{
                 moveInit = false;
             }
 //            initRunToTarget(motorName,target,power);
-
+            while(rbt.getEncoderCounts(motorName)==null){
+                try {
+                    TimeUnit.MILLISECONDS.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             if ((rbt.motors.get(motorName) != null) && !rbt.motors.get(motorName).isBusy()||(Math.abs(rbt.getEncoderCounts(motorName)) >= Math.abs(target)-20)) {
                 rbt.setPower(motorName,0);
                 if(reset) rbt.resetEncoder(motorName);

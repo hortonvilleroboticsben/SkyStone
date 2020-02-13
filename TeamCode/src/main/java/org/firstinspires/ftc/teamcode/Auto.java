@@ -116,8 +116,8 @@ public class Auto extends OpMode {
 
         int[] temp = vision.getVisionData();
         vsData = temp == null ? vsData : temp;
-//        final int placement = allianceColor.equals("red") ? (5-vsData[0])%3 + 1 : vsData[0];
-        final int placement = 1;
+        final int placement = allianceColor.equals("red") ? (5-vsData[0])%3 + 1 : vsData[0];
+//        final int placement = 1;
         telemetry.addData("Placement: ", placement + "");
 
         vision.SetFlag(drive, "Vision Done");
@@ -133,10 +133,12 @@ public class Auto extends OpMode {
 
                 //lift.WaitForFlag("Vision Done");
                 lift.setServoPower("srvRotator", rotatorOpen);
+                lift.pause(500);
+                lift.runToTarget("mtrLift", -150,0.6,true);
                 lift.setServoPosition("srvClampLeft", leftOpen + .3);
                 lift.setServoPosition("srvClampRight", rightOpen);
                 //lift.pause(500);
-                lift.runToTarget("mtrLift", -150,0.6,true);
+
 
                 drive.translate(90, 0.5, 26);
                 drive.rotate(-90, 0.5);
@@ -146,7 +148,7 @@ public class Auto extends OpMode {
                         drive.translate(-155, 0.5, 3.8);
                         break;
                     case 2:
-                        drive.translate(160, 0.5, 8);
+                        drive.translate(85, 0.5, 7);
                         break;
                     case 3:
                         drive.translate(100, 0.5, 17);
@@ -157,7 +159,8 @@ public class Auto extends OpMode {
 
                 lift.WaitForFlag("In Position");
 
-                lift.runToTarget("mtrLift", 120, 0.6, true);
+                lift.runToTarget("mtrLift", 150, 0.6, true);
+                lift.pause(500);
                 lift.setServoPosition("srvClampLeft", leftClosed);
                 lift.setServoPosition("srvClampRight", rightClosed);
                 lift.pause(500);
@@ -178,7 +181,7 @@ public class Auto extends OpMode {
                 }
 //hi
                 if (returnPath.equals("wall")) {
-                    drive.translate(-5, 0.5, 17);
+                    drive.translate(-5, 0.5, 15);
                 }
                 drive.translate(-5,0.5,3);
                 //Drive to Under Bridge
@@ -193,7 +196,7 @@ public class Auto extends OpMode {
                     drive.translate(-90, 0.5, 55);
 
                     lift.WaitForFlag("Raise");
-                    lift.runToTarget("mtrLift", -400, 0.6, true);
+                    lift.runToTarget("mtrLift", -500, 0.6, true);
 
                     if (returnPath.equals("wall")) {
                         drive.translate(180, 0.5, 16);
@@ -203,9 +206,14 @@ public class Auto extends OpMode {
                     drive.SetFlag(lift, "Place");
 
                     lift.WaitForFlag("Place");
+                    lift.runToTarget("mtrLift", 200, .6, true);
                     lift.setServoPosition("srvClampLeft", leftOpen);
                     lift.setServoPosition("srvClampRight", rightOpen);
+                    lift.pause(500);
+                    lift.runToTarget("mtrLift", -200, .6, true);
                     lift.SetFlag(drive, "Placed");
+
+
 
                     drive.WaitForFlag("Placed");
                     drive.translate(0, 0.5, 5);

@@ -23,7 +23,7 @@ public class Doodler extends View {
         p.setTextSize(16);
         x = 50;
         y = 300;
-        w = 190;
+        w = 90;
         h = 50;
     }
 
