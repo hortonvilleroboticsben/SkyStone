@@ -107,11 +107,11 @@ public class TeleOpComp extends OpMode {
 
             if(openClamp){
                 //Just flipped these
-                r.setServoPosition("srvClampLeft",.3);
-                r.setServoPosition("srvClampRight", .19);
+                r.setServoPosition("srvClampLeft",r.leftOpen);
+                r.setServoPosition("srvClampRight", r.rightOpen);
             } else {
-                r.setServoPosition("srvClampLeft",.19);
-                r.setServoPosition("srvClampRight", .3);
+                r.setServoPosition("srvClampLeft",r.leftClosed);
+                r.setServoPosition("srvClampRight", r.rightClosed);
             }
 
             //Foundation Clips.......................................................................
@@ -151,13 +151,14 @@ public class TeleOpComp extends OpMode {
                 auto = true;
                 m.reset();
             }
+
         } //End of TeleOp Actions
         //Start of Autonmous Actions
         m.setServoPosition("srvClampLeft",r.leftOpen);
         m.setServoPosition("srvClampRight",r.rightOpen);
-        m.runToTarget("mtrLift",liftEnc-200,0.9,false);
-        m.translate(0,r.safeSpeed,8);
-        m.runToTarget("mtrLift",0,0.5,false);
+//        m.runToTarget("mtrLift",liftEnc-200,0.9,false);
+//        m.translate(0,r.safeSpeed,8);
+//        m.runToTarget("mtrLift",0,0.5,false);
         if(m.next_state_to_execute() && auto){
             auto = false;
             m.incrementState();

@@ -229,10 +229,10 @@ public class AutonomousComp extends OpMode {
                     sm.rotate(-95, r.safeSpeed);
                     sm.translate(-90,r.safeSpeed,2);
                     sm.translate(0, r.safeSpeed, 15.5);
-                    sm.setServoPower("srvFound", r.foundDown);
+                    sm.setServoPower("srvFound", .1);
                     sm.pause(500);
                     sm.translate(90, .75, 50);
-                    sm.setServoPower("srvFound", r.foundUp);
+                    sm.setServoPower("srvFound", .1);
                 }
 
                 if(multitask.next_state_to_execute()){
@@ -381,10 +381,10 @@ public class AutonomousComp extends OpMode {
                 if (!apMoveFoundation) {
                     sm.rotate(-90, r.safeSpeed);
                     sm.translate(180, r.safeSpeed, 15.5);
-                    sm.setServoPosition("srvFound", r.foundDown);
+                    sm.setServoPosition("srvFound", .1);
                     sm.pause(500);
                     sm.translate(90, .75, 50);
-                    sm.setServoPosition("srvFound", r.foundUp);
+                    sm.setServoPosition("srvFound", .1);
                 }
 
 // - - - - - - - - - - - - - - - - - - - | LOWER LIFT | - - - - - - - - - - - - - - - - - - - - - -
@@ -454,10 +454,10 @@ public class AutonomousComp extends OpMode {
 
                 if (!apMoveFoundation) { // MOVE THE FOUNDATION
                     sm.translate(-90, r.safeSpeed, 28);
-                    sm.setServoPosition("srvFound", r.foundDown);
+                    sm.setServoPosition("srvFound", .1);
                     sm.pause(500);
                     sm.translate(90, .75, 50);
-                    sm.setServoPosition("srvFound", r.foundUp);
+                    sm.setServoPosition("srvFound", .1); //Change anyways
 
                 }
 
@@ -479,10 +479,10 @@ public class AutonomousComp extends OpMode {
 
                 if (!apMoveFoundation) { // MOVE THE FOUNDATION
                     sm.translate(-90, r.safeSpeed, 28);
-                    sm.setServoPosition("srvFound", r.foundDown);
+                    sm.setServoPosition("srvFound", .1);
                     sm.pause(500);
                     sm.translate(90, .75, 50);
-                    sm.setServoPosition("srvFound", r.foundUp);
+                    sm.setServoPosition("srvFound", .1);
 
                 }
 

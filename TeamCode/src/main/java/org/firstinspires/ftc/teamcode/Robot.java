@@ -107,12 +107,12 @@ class   Robot{
     Handler backgroundHandler;
     HandlerThread handlerThread;
 
-
     double safeSpeed = .65;
-    double leftOpen = .3, leftClosed = .19;
-    double rightOpen = .19, rightClosed = .28;
+    double leftOpen = .18, leftClosed = .27;
+    double rightOpen = .4, rightClosed = .19;
     double rotatorOpen = .15, rotatorClosed = .8;
-    double foundDown = .2, foundUp = .8;
+    double foundLeftDown = .1, foundLeftUp = .4;
+    double foundRightDown = .3, foundRightUp = .85;
 
     public Map<String, DcMotor> motors;
     public Map<String, Object> servos;
