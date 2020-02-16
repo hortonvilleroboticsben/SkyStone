@@ -67,16 +67,16 @@ public class TeleOpComp extends OpMode {
                 double hyp = Math.sqrt(x * x + y * y);
                 boolean motorBand = Math.abs(x) > .05 || Math.abs(y)> .05;
                 double speedControl = gamepad1.right_bumper ? 1 : gamepad1.right_trigger > .4 ? .25 : .5;
-                r.setPower(r.wheelSet1[0], motorBand ?  hyp * Math.cos(theta2) * speedControl : 0);
-                r.setPower(r.wheelSet2[0], motorBand ? -hyp * Math.sin(theta2) * speedControl : 0);
-                r.setPower(r.wheelSet1[1], motorBand ?  hyp * Math.cos(theta2) * speedControl : 0);
-                r.setPower(r.wheelSet2[1], motorBand ? -hyp * Math.sin(theta2) * speedControl : 0);
+                r.setPower(Robot.wheelSet1[0], motorBand ?  hyp * Math.cos(theta2) * speedControl : 0);
+                r.setPower(Robot.wheelSet2[0], motorBand ? -hyp * Math.sin(theta2) * speedControl : 0);
+                r.setPower(Robot.wheelSet1[1], motorBand ?  hyp * Math.cos(theta2) * speedControl : 0);
+                r.setPower(Robot.wheelSet2[1], motorBand ? -hyp * Math.sin(theta2) * speedControl : 0);
 
             }else {
-                r.setPower(r.wheelSetL[0], gamepad1.right_stick_x/2);
-                r.setPower(r.wheelSetL[1], gamepad1.right_stick_x/2);
-                r.setPower(r.wheelSetR[0], -gamepad1.right_stick_x/2);
-                r.setPower(r.wheelSetR[1], -gamepad1.right_stick_x/2);
+                r.setPower(Robot.wheelSetL[0], gamepad1.right_stick_x/2);
+                r.setPower(Robot.wheelSetL[1], gamepad1.right_stick_x/2);
+                r.setPower(Robot.wheelSetR[0], -gamepad1.right_stick_x/2);
+                r.setPower(Robot.wheelSetR[1], -gamepad1.right_stick_x/2);
             }
 
 //          ****************************************************************************************
@@ -188,8 +188,8 @@ public class TeleOpComp extends OpMode {
         telemetry.addData("Left Clamp Position:",srvClampLeft.getPosition());
         telemetry.addData("Right Clamp Position:",srvClampRight.getPosition());
         telemetry.addData("Rotator Position:",srvRotator.getPosition());
-        telemetry.addData("Foundation Left Position:",srvFoundLeft.getPosition());
-        telemetry.addData("Foundation Right Position:", srvFoundRight.getPosition());
+        //telemetry.addData("Foundation Left Position:",srvFoundLeft.getPosition());
+        //telemetry.addData("Foundation Right Position:", srvFoundRight.getPosition());
 
 
         telemetry.addData("theta1", theta1 * 180 / Math.PI);
