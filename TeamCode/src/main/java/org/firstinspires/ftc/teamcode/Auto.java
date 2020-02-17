@@ -33,12 +33,6 @@ public class Auto extends OpMode {
     int skyStones = 2; //default
     JSONObject settings;
 
-    double leftOpen = .3, leftClosed = .18;
-    double rightOpen = .19, rightClosed = .4;
-    double rotatorOpen = .1, rotatorClosed = .8;
-    double foundLeftDown = .1, foundLeftUp = .4;
-    double foundRightDown = .3, foundRightUp = .85;
-
     int[] vsData = null;
 
     @Override
@@ -132,11 +126,10 @@ public class Auto extends OpMode {
             if(loadingSideStart) { //BLUE & LOADING SIDE
 
                 //lift.WaitForFlag("Vision Done");
-                lift.setServoPower("srvRotator", rotatorOpen);
-                lift.pause(500);
-                lift.runToTarget("mtrLift", -150,0.6,true);
-                lift.setServoPosition("srvClampLeft", leftOpen + .3);
-                lift.setServoPosition("srvClampRight", rightOpen);
+                lift.setServoPower("srvRotator", r.rotatorOpen);
+                lift.runToTarget("mtrLift", -100,0.6,true);
+                lift.setServoPosition("srvClampLeft", r.leftOpen - 0.08 );
+                lift.setServoPosition("srvClampRight", r.rightOpen);
                 //lift.pause(500);
 
 
@@ -159,17 +152,17 @@ public class Auto extends OpMode {
 
                 lift.WaitForFlag("In Position");
 
-                lift.runToTarget("mtrLift", 150, 0.6, true);
-                lift.pause(500);
-                lift.setServoPosition("srvClampLeft", leftClosed);
-                lift.setServoPosition("srvClampRight", rightClosed);
-                lift.pause(500);
+                lift.runToTarget("mtrLift", 100, 0.6, true);
+                lift.pause(250);
+                lift.setServoPosition("srvClampLeft", r.leftClosed);
+                lift.setServoPosition("srvClampRight", r.rightClosed);
+                lift.pause(250);
                 //lift.runToTarget("mtrLift",-50,0.6,true);
                 lift.SetFlag(drive, "Grabbed");
 
                 drive.WaitForFlag("Grabbed");
 
-                drive.translate(0, 0.5, 5);
+                drive.translate(0, 0.6, 5);
 
                 switch (placement) {//Move to skyStone pos 1 even if we are at pos 2 || 3
                     case 2:
@@ -183,12 +176,12 @@ public class Auto extends OpMode {
                 if (returnPath.equals("wall")) {
                     drive.translate(-5, 0.5, 15);
                 }
-                drive.translate(-5,0.5,3);
+                drive.translate(-5,0.6,3);
                 //Drive to Under Bridge
                 drive.translate(-90, 0.5, 33);
 
-                drive.setServoPosition("srvFoundRight", foundRightUp);
-                drive.setServoPosition("srvFoundLeft", foundLeftUp);
+                drive.setServoPosition("srvFoundRight", r.foundRightUp);
+                drive.setServoPosition("srvFoundLeft", r.foundLeftUp);
 
                 if (!apMoveFoundation) {
                     //If we are moving foundation 73
@@ -196,7 +189,7 @@ public class Auto extends OpMode {
                     drive.translate(-90, 0.5, 55);
 
                     lift.WaitForFlag("Raise");
-                    lift.runToTarget("mtrLift", -500, 0.6, true);
+                    lift.runToTarget("mtrLift", -400, 0.6, true);
 
                     if (returnPath.equals("wall")) {
                         drive.translate(180, 0.5, 16);
@@ -207,10 +200,10 @@ public class Auto extends OpMode {
 
                     lift.WaitForFlag("Place");
                     lift.runToTarget("mtrLift", 200, .6, true);
-                    lift.setServoPosition("srvClampLeft", leftOpen);
-                    lift.setServoPosition("srvClampRight", rightOpen);
-                    lift.pause(500);
-                    lift.runToTarget("mtrLift", -200, .6, true);
+                    lift.setServoPosition("srvClampLeft", r.leftOpen);
+                    lift.setServoPosition("srvClampRight", r.rightOpen);
+                    //lift.pause(500);
+                    //lift.runToTarget("mtrLift", -200, .6, true);
                     lift.SetFlag(drive, "Placed");
 
 
@@ -221,22 +214,22 @@ public class Auto extends OpMode {
 //                    drive.SetFlag(lift, "DropLift");
 
 //                    lift.WaitForFlag("DropLift");
-                    lift.setServoPosition("srvClampLeft", leftClosed-.08);
-                    lift.setServoPosition("srvRotator", rotatorClosed);
-                    lift.runToTarget("mtrLift", 400, 0.6, true);
+                    lift.setServoPosition("srvClampLeft", r.leftClosed-.08);
+                    lift.setServoPosition("srvRotator", r.rotatorClosed);
+                    lift.runToTarget("mtrLift", 200, 0.6, true);
 
-                    drive.translate(0, 0.5, 5);
+                    drive.translate(0, 0.6, 5);
 
                     //Close Foundation Grabbers0
-                    drive.setServoPosition("srvFoundRight", foundRightDown);
-                    drive.setServoPosition("srvFoundLeft", foundLeftDown);
+                    drive.setServoPosition("srvFoundRight", r.foundRightDown);
+                    drive.setServoPosition("srvFoundLeft", r.foundLeftDown);
 
-                    drive.translate(180, 0.5, 38);
+                    drive.translate(180, 0.6, 36);
 
                     //Open Foundation Grabbers
 
-                    drive.setServoPosition("srvFoundRight", foundRightUp);
-                    drive.setServoPosition("srvFoundLeft", foundLeftUp);
+                    drive.setServoPosition("srvFoundRight", r.foundRightUp);
+                    drive.setServoPosition("srvFoundLeft", r.foundLeftUp);
 
                     drive.translate(-90, 0.5, 35);
                     if (returnPath.equals("wall")) {
@@ -248,9 +241,30 @@ public class Auto extends OpMode {
                 }
             } else { //BLUE & BUILDING SIDE
 
-                //translate backwards at a small angle to prime position to grab foundation
+                //line wheel up on outside of mat lines
 
-                //foundation servos
+                if(!apMoveFoundation) {
+
+                    lift.setServoPosition("srvFoundRight", r.foundRightUp);
+                    lift.setServoPosition("srvFoundLeft", r.foundLeftUp);
+
+                    drive.translate(30, .5, 31.5);
+
+                    drive.setServoPosition("srvFoundRight", r.foundRightDown);
+                    drive.setServoPosition("srvFoundLeft", r.foundLeftDown);
+
+                    drive.translate(180, .5, 29);
+
+                    drive.setServoPosition("srvFoundRight", r.foundRightUp);
+                    drive.setServoPosition("srvFoundLeft", r.foundLeftUp);
+                }
+
+                drive.translate(-90, 0.5, 35);
+                if (returnPath.equals("wall")) {
+                    drive.translate(-90, 0.5, 30);
+                } else {
+                    drive.translate(-35, 0.5, 45);
+                }
 
             }
 
@@ -258,25 +272,25 @@ public class Auto extends OpMode {
 
             if(loadingSideStart){ //RED & LOADING SIDE
 
-                //lift.WaitForFlag("Vision Done");
-                lift.setServoPower("srvRotator", rotatorOpen);
-                lift.setServoPosition("srvClampLeft", leftOpen + .3);
-                lift.setServoPosition("srvClampRight", rightOpen);
+                lift.setServoPower("srvRotator", r.rotatorOpen);
+                lift.runToTarget("mtrLift", -100,0.6,true);
+                lift.setServoPosition("srvClampLeft", r.leftOpen - 0.08 );
+                lift.setServoPosition("srvClampRight", r.rightOpen);
                 //lift.pause(500);
-//                lift.runToTarget("mtrLift", -200,0.5,true);
+
 
                 drive.translate(90, 0.5, 26);
                 drive.rotate(-90, 0.5);
 
                 switch (placement) {
                     case 1:
-                        drive.translate(-165, 0.5, 8.1);
+                        drive.translate(125, 0.5, 5);
                         break;
                     case 2:
-                        drive.translate(160, 0.5, 8);
+                        drive.translate(-160, 0.5, 7);
                         break;
                     case 3:
-                        drive.translate(100, 0.5, 17);
+                        drive.translate(-100, 0.5, 17);
                         break;
                 }
 
@@ -284,15 +298,17 @@ public class Auto extends OpMode {
 
                 lift.WaitForFlag("In Position");
 
-                lift.runToTarget("mtrLift", 200, 0.6, true);
-                lift.setServoPosition("srvClampLeft", leftClosed);
-                lift.setServoPosition("srvClampRight", rightClosed);
-
+                lift.runToTarget("mtrLift", 100, 0.6, true);
+                lift.pause(250);
+                lift.setServoPosition("srvClampLeft", r.leftClosed);
+                lift.setServoPosition("srvClampRight", r.rightClosed);
+                lift.pause(250);
+                //lift.runToTarget("mtrLift",-50,0.6,true);
                 lift.SetFlag(drive, "Grabbed");
 
                 drive.WaitForFlag("Grabbed");
 
-                drive.translate(0, 0.5, 5);
+                drive.translate(0, 0.6, 5);
 
                 switch (placement) {//Move to skyStone pos 1 even if we are at pos 2 || 3
                     case 2:
@@ -302,68 +318,103 @@ public class Auto extends OpMode {
                         drive.translate(85, 0.5, 16);
                         break;
                 }
-//hey der
+//hi
                 if (returnPath.equals("wall")) {
-                    drive.translate(0, 0.5, 17.75);
+                    drive.translate(5, 0.5, 14.75);
                 }
+                drive.translate(5,0.6,3);
                 //Drive to Under Bridge
-                drive.translate(85, 0.5, 39);
+                drive.translate(90, 0.5, 33);
 
-                lift.setServoPosition("srvFoundRight", foundRightUp);
-                lift.setServoPosition("srvFoundLeft", foundLeftUp);
+                drive.setServoPosition("srvFoundRight", r.foundRightUp);
+                drive.setServoPosition("srvFoundLeft", r.foundLeftUp);
 
                 if (!apMoveFoundation) {
                     //If we are moving foundation 73
                     drive.SetFlag(lift, "Raise");
-                    drive.translate(85, 0.5, 46);
+                    drive.translate(100, 0.5, 55);
+                    drive.rotate(20, .5);
+
 
                     lift.WaitForFlag("Raise");
                     lift.runToTarget("mtrLift", -400, 0.6, true);
 
                     if (returnPath.equals("wall")) {
-                        drive.translate(180, 0.5, 21);
+                        drive.translate(180, 0.5, 16);
                     }
+                    //When we are not_wall path
+                    drive.translate(180, 0.5, 10);
                     drive.SetFlag(lift, "Place");
 
                     lift.WaitForFlag("Place");
-                    lift.setServoPosition("srvClampLeft", leftOpen);
-                    lift.setServoPosition("srvClampRight", rightOpen);
+                    lift.runToTarget("mtrLift", 200, .6, true);
+                    lift.setServoPosition("srvClampLeft", r.leftOpen);
+                    lift.setServoPosition("srvClampRight", r.rightOpen);
+                    //lift.pause(500);
+                    //lift.runToTarget("mtrLift", -200, .6, true);
                     lift.SetFlag(drive, "Placed");
+
+
 
                     drive.WaitForFlag("Placed");
                     drive.translate(0, 0.5, 5);
                     drive.rotate(180, 0.5);
-                    drive.SetFlag(lift, "DropLift");
+//                    drive.SetFlag(lift, "DropLift");
 
-                    lift.WaitForFlag("DropLift");
-                    lift.setServoPosition("srvRotator", rotatorClosed);
-                    lift.runToTarget("mtrLift", 400, 0.6, true);
+//                    lift.WaitForFlag("DropLift");
+                    lift.setServoPosition("srvClampLeft", r.leftClosed-.08);
+                    lift.setServoPosition("srvRotator", r.rotatorClosed);
+                    lift.runToTarget("mtrLift", 200, 0.6, true);
 
-                    drive.translate(0, 0.5, 5);
+                    drive.translate(0, 0.6, 5);
 
-                    //Close Foundation Grabbers
-                    drive.setServoPosition("srvFoundRight", foundRightDown);
-                    drive.setServoPosition("srvFoundLeft", foundLeftDown);
+                    //Close Foundation Grabbers0
+                    drive.setServoPosition("srvFoundRight", r.foundRightDown);
+                    drive.setServoPosition("srvFoundLeft", r.foundLeftDown);
 
-                    drive.pause(250);
-
-                    drive.translate(180, 0.5, 28);
+                    drive.translate(180, 0.6, 36);
 
                     //Open Foundation Grabbers
 
-                    drive.setServoPosition("srvFoundRight", foundRightUp);
-                    drive.setServoPosition("srvFoundLeft", foundLeftUp);
+                    drive.setServoPosition("srvFoundRight", r.foundRightUp);
+                    drive.setServoPosition("srvFoundLeft", r.foundLeftUp);
 
-                    drive.translate(90, 0.5, 25);
+                    drive.translate(90, 0.5, 35);
                     if (returnPath.equals("wall")) {
-                        drive.translate(90, 0.5, 15);
+                        drive.translate(90, 0.5, 30);
                     } else {
-                        drive.translate(30, 0.5, 50);
+                        drive.translate(50, 0.5, 50);
                     }
 
                 }
 
             } else { //RED & BUILDING SIDE
+
+                //line wheel up on outside of mat lines
+
+                if(!apMoveFoundation) {
+
+                    lift.setServoPosition("srvFoundRight", r.foundRightUp);
+                    lift.setServoPosition("srvFoundLeft", r.foundLeftUp);
+
+                    drive.translate(-30, .5, 31.5);
+
+                    drive.setServoPosition("srvFoundRight", r.foundRightDown);
+                    drive.setServoPosition("srvFoundLeft", r.foundLeftDown);
+
+                    drive.translate(180, .5, 29);
+
+                    drive.setServoPosition("srvFoundRight", r.foundRightUp);
+                    drive.setServoPosition("srvFoundLeft", r.foundLeftUp);
+                }
+
+                drive.translate(90, 0.5, 35);
+                if (returnPath.equals("wall")) {
+                    drive.translate(90, 0.5, 30);
+                } else {
+                    drive.translate(35, 0.5, 39);
+                }
+
 
             }
 
