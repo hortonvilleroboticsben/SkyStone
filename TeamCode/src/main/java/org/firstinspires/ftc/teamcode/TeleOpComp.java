@@ -79,6 +79,20 @@ public class TeleOpComp extends OpMode {
                 r.setPower(Robot.wheelSetR[1], -gamepad1.right_stick_x/2);
             }
 
+            if(gamepad1.a && !OSClamp){
+                OSClamp = true;
+                openClamp = !openClamp;
+            } else if(!gamepad1.a) OSClamp = false;
+
+            if(openClamp){
+                //Just flipped these
+                r.setServoPosition("srvClampLeft",r.leftOpen);
+                r.setServoPosition("srvClampRight", r.rightOpen);
+            } else {
+                r.setServoPosition("srvClampLeft",r.leftClosed);
+                r.setServoPosition("srvClampRight", r.rightClosed);
+            }
+
 //          ****************************************************************************************
 //            Gamepad Two Controls
             // Lift - Right Stick Y
@@ -100,25 +114,13 @@ public class TeleOpComp extends OpMode {
 
 //          *************************************Toggles********************************************
 
-            if(gamepad2.right_bumper && !OSClamp){
-                OSClamp = true;
-                openClamp = !openClamp;
-            } else if(!gamepad2.right_bumper) OSClamp = false;
 
-            if(openClamp){
-                //Just flipped these
-                r.setServoPosition("srvClampLeft",r.leftOpen);
-                r.setServoPosition("srvClampRight", r.rightOpen);
-            } else {
-                r.setServoPosition("srvClampLeft",r.leftClosed);
-                r.setServoPosition("srvClampRight", r.rightClosed);
-            }
 
             //Foundation Clips.......................................................................
             if(gamepad2.y && !OSFoundGrabbers){
                 OSFoundGrabbers = true;
                 usingFoundGrabbers = !usingFoundGrabbers;
-            } else if(!gamepad1.a) OSFoundGrabbers = false;
+            } else if(!gamepad1.y) OSFoundGrabbers = false;
 
             if(usingFoundGrabbers){
                 r.setServoPosition("srvFoundLeft", .85);
@@ -144,25 +146,25 @@ public class TeleOpComp extends OpMode {
             }
 
 //          **********************************Stick Adjustments*************************************
-
+//.2
             //Autonomous Actions-----------------------------------------------------------------
-            if(gamepad2.a && !gamepad2.start && !gamepad1.start){
-                liftEnc = r.getEncoderCounts("mtrLift");
-                auto = true;
-                m.reset();
-            }
+//            if(gamepad2.a && !gamepad2.start && !gamepad1.start){
+//                liftEnc = r.getEncoderCounts("mtrLift");
+//                auto = true;
+//                m.reset();
+//            }
 
         } //End of TeleOp Actions
         //Start of Autonmous Actions
-        m.setServoPosition("srvClampLeft",r.leftOpen);
-        m.setServoPosition("srvClampRight",r.rightOpen);
+//        m.setServoPosition("srvClampLeft",r.leftOpen);
+//        m.setServoPosition("srvClampRight",r.rightOpen);
 //        m.runToTarget("mtrLift",liftEnc-200,0.9,false);
 //        m.translate(0,r.safeSpeed,8);
 //        m.runToTarget("mtrLift",0,0.5,false);
-        if(m.next_state_to_execute() && auto){
-            auto = false;
-            m.incrementState();
-        }
+//        if(m.next_state_to_execute() && auto){
+//            auto = false;
+//            m.incrementState();
+//        }
 
 // Automous In TeleOp
 //        if(gamepad1.a && !gamepad1.start){

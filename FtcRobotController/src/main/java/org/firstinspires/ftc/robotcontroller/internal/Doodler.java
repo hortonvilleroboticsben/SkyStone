@@ -21,9 +21,9 @@ public class Doodler extends View {
         p.setColor(Color.RED);
         p.setStyle(Paint.Style.STROKE);
         p.setTextSize(16);
-        x = 50;
+        x = 25;
         y = 300;
-        w = 90;
+        w = 115;
         h = 50;
     }
 

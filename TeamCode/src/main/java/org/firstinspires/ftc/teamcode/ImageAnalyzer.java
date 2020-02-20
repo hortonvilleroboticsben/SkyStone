@@ -119,7 +119,7 @@ public class ImageAnalyzer extends OpMode {
 //        DistortImageOps.rotate(layers, layers, BorderType.ZERO, InterpolationType.POLYNOMIAL4, 270);
         //for (int i = 0; i<layers.getNumBands();i++) ImageMiscOps.rotateCW(layers.getBand(i), layers.getBand(i));
         //ConvertBitmap.planarToBitmap(layers, bitmap, null);
-        bitmap = Bitmap.createBitmap(bitmap,50, 300,90,50);
+        bitmap = Bitmap.createBitmap(bitmap,25, 300,115,50);
         save(bitmap);
         //save(bitmap);
         width = bitmap.getWidth();
@@ -173,8 +173,8 @@ public class ImageAnalyzer extends OpMode {
         save(bitmap);
         int xAverages = 0;
         int count = 0;
-        for (int p = 0; p < width; p+=5) {
-            for (int e = 0; e < height; e+=5) {
+        for (int p = 0; p < width; p+=7) {
+            for (int e = 0; e < height; e+=7) {
                 //textView.setText("asdlfjalsdjfk;asdfjasdlkfj");
 
 
@@ -212,13 +212,15 @@ public class ImageAnalyzer extends OpMode {
             //Toast.makeText(context, "2", Toast.LENGTH_LONG).show();
             pos =  2;
         }
-        if(xAverages >= 6   *width/11 && xAverages < 7*width/11) {
+        if(xAverages >= 6   *width/11 && xAverages < 10*width/11) {
             //Toast.makeText(context, "3", Toast.LENGTH_LONG).show();
-            pos =  3;
-        }
-        if(xAverages >= 7*width/11 && xAverages <= width){
-            //Toast.makeText(context, "1", Toast.LENGTH_LONG).show();
             pos =  1;
+        }
+        if(xAverages >= 10*width/11 && xAverages <= width){
+            //Toast.makeText(context, "1", Toast.LENGTH_LONG).show();
+            pos =  3;
+        } else {
+            pos = -1;
         }
         int[] returned = {pos, xAverages};
         return returned;

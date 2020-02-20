@@ -33,7 +33,7 @@ public class Auto extends OpMode {
     int skyStones = 2; //default
     JSONObject settings;
 
-    int[] vsData = null;
+    int[] vsData = {-1,-1};
 
     @Override
     public void init(){
@@ -113,7 +113,7 @@ public class Auto extends OpMode {
         final int placement = allianceColor.equals("red") ? (5-vsData[0])%3 + 1 : vsData[0];
 //        final int placement = 1;
         telemetry.addData("Placement: ", placement + "");
-
+        telemetry.addData("xAverages: ", vsData[1]);
         vision.SetFlag(drive, "Vision Done");
         vision.SetFlag(lift, "Vision Done");
 
@@ -284,13 +284,13 @@ public class Auto extends OpMode {
 
                 switch (placement) {
                     case 1:
-                        drive.translate(125, 0.5, 5);
+                        drive.translate(125, 0.5, 5.6);
                         break;
                     case 2:
-                        drive.translate(-160, 0.5, 7);
+                        drive.translate(-135, 0.5, 10);
                         break;
                     case 3:
-                        drive.translate(-100, 0.5, 17);
+                        drive.translate(-100, 0.5, 14);
                         break;
                 }
 
@@ -299,17 +299,16 @@ public class Auto extends OpMode {
                 lift.WaitForFlag("In Position");
 
                 lift.runToTarget("mtrLift", 100, 0.6, true);
-                lift.pause(250);
+                lift.pause(200);
                 lift.setServoPosition("srvClampLeft", r.leftClosed);
                 lift.setServoPosition("srvClampRight", r.rightClosed);
-                lift.pause(250);
-                //lift.runToTarget("mtrLift",-50,0.6,true);
+                lift.pause(200);
+                //lift.runToTarget("mtrLift",-75,0.6,true);
                 lift.SetFlag(drive, "Grabbed");
 
                 drive.WaitForFlag("Grabbed");
 
-                drive.translate(0, 0.6, 5);
-
+                drive.translate(0, 0.6, 6);
                 switch (placement) {//Move to skyStone pos 1 even if we are at pos 2 || 3
                     case 2:
                         drive.translate(85, 0.5, 8);
@@ -324,7 +323,8 @@ public class Auto extends OpMode {
                 }
                 drive.translate(5,0.6,3);
                 //Drive to Under Bridge
-                drive.translate(90, 0.5, 33);
+                drive.translate(90, 0.75, 33);
+                drive.rotate(10,.5);
 
                 drive.setServoPosition("srvFoundRight", r.foundRightUp);
                 drive.setServoPosition("srvFoundLeft", r.foundLeftUp);
@@ -332,8 +332,8 @@ public class Auto extends OpMode {
                 if (!apMoveFoundation) {
                     //If we are moving foundation 73
                     drive.SetFlag(lift, "Raise");
-                    drive.translate(100, 0.5, 55);
-                    drive.rotate(20, .5);
+                    drive.translate(90, 0.75, 55);
+                    drive.rotate(22, .5);
 
 
                     lift.WaitForFlag("Raise");
@@ -372,7 +372,7 @@ public class Auto extends OpMode {
                     drive.setServoPosition("srvFoundRight", r.foundRightDown);
                     drive.setServoPosition("srvFoundLeft", r.foundLeftDown);
 
-                    drive.translate(180, 0.6, 36);
+                    drive.translate(180, 0.6, 39);
 
                     //Open Foundation Grabbers
 
