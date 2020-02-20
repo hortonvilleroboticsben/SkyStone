@@ -109,7 +109,7 @@ public class ImageAnalyzer extends OpMode {
         return croppedImg;
     }
 
-    public static int[] blurImg(Bitmap bitmap){
+    public  int[] blurImg(Bitmap bitmap){
 
         int x = 0;
         int y = 0;
@@ -184,7 +184,7 @@ public class ImageAnalyzer extends OpMode {
                 int R = Color.red(pixel);
                 int G = Color.green(pixel);
                 int B = Color.blue(pixel);
-                int gray = (int) (4 * R + 0 * G + -8 * B);//(R,G,B)->(0.2989,0.5870,0.1140)
+                int gray = 4 * R + 0 * G + -8 * B;//(R,G,B)->(0.2989,0.5870,0.1140)
                 int average = G+R+B;
                 // use 128 as threshold, above -> white, below -> black
                 if (R > 115 && B < 115) {
@@ -212,14 +212,15 @@ public class ImageAnalyzer extends OpMode {
             //Toast.makeText(context, "2", Toast.LENGTH_LONG).show();
             pos =  2;
         }
-        if(xAverages >= 6   *width/11 && xAverages < 10*width/11) {
+        if(xAverages >= 6   *width/11 && xAverages < 7*width/11) {
             //Toast.makeText(context, "3", Toast.LENGTH_LONG).show();
-            pos =  1;
-        }
-        if(xAverages >= 10*width/11 && xAverages <= width){
-            //Toast.makeText(context, "1", Toast.LENGTH_LONG).show();
             pos =  3;
+        }
+        if(xAverages >= 7*width/11 && xAverages <= width){
+
+            pos =  1;
         } else {
+            telemetry.addData("VISION ", "ERRORED OUT");
             pos = -1;
         }
         int[] returned = {pos, xAverages};

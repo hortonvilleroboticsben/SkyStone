@@ -114,6 +114,9 @@ public class Auto extends OpMode {
 //        final int placement = 1;
         telemetry.addData("Placement: ", placement + "");
         telemetry.addData("xAverages: ", vsData[1]);
+
+        lift.runToTarget("mtrLift", -100, .6, true);
+
         vision.SetFlag(drive, "Vision Done");
         vision.SetFlag(lift, "Vision Done");
 
@@ -127,7 +130,7 @@ public class Auto extends OpMode {
 
                 //lift.WaitForFlag("Vision Done");
                 lift.setServoPower("srvRotator", r.rotatorOpen);
-                lift.runToTarget("mtrLift", -100,0.6,true);
+//                lift.runToTarget("mtrLift", -100,0.6,true);
                 lift.setServoPosition("srvClampLeft", r.leftOpen - 0.08 );
                 lift.setServoPosition("srvClampRight", r.rightOpen);
                 //lift.pause(500);
@@ -138,6 +141,9 @@ public class Auto extends OpMode {
 
                 switch (placement) {
                     case 1:
+                        drive.translate(-155, 0.5, 3.8);
+                        break;
+                    case -1:
                         drive.translate(-155, 0.5, 3.8);
                         break;
                     case 2:
@@ -186,7 +192,7 @@ public class Auto extends OpMode {
                 if (!apMoveFoundation) {
                     //If we are moving foundation 73
                     drive.SetFlag(lift, "Raise");
-                    drive.translate(-90, 0.5, 55);
+                    drive.translate(-90, 0.5, 53);
 
                     lift.WaitForFlag("Raise");
                     lift.runToTarget("mtrLift", -400, 0.6, true);
