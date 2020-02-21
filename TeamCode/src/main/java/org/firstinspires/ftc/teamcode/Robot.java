@@ -110,7 +110,7 @@ class   Robot{
     double safeSpeed = .65;
     double leftOpen = .18, leftClosed = .27;
     double rightOpen = .4, rightClosed = .19;
-    double rotatorOpen = .15, rotatorClosed = .8;
+    double rotatorOpen = .25, rotatorClosed = .9;
     double foundLeftDown = .1, foundLeftUp = .4;
     double foundRightDown = .3, foundRightUp = .85;
 
@@ -189,7 +189,7 @@ class   Robot{
                         sensor = op.hardwareMap.colorSensor.get(sen[0]);
                         ((ColorSensor) sensor).setI2cAddress(I2cAddr.create8bit(Integer.parseInt(sen[1],16)));
                         ((ColorSensor) sensor).enableLed(true);
-                        sensors.put(sen[0], (ColorSensor)sensor);
+                        sensors.put(sen[0], sensor);
                     } else sensors.put(sen[0], sensor);
             }
         }catch (Exception e){

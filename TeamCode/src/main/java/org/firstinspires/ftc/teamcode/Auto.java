@@ -110,13 +110,14 @@ public class Auto extends OpMode {
         lift.initializeMachine();
 
         int[] temp = vision.getVisionData();
+        telemetry.addData("Get Past?", "yes");
         vsData = temp == null ? vsData : temp;
         final int placement = allianceColor.equals("red") ? (5-vsData[0])%3 + 1 : vsData[0];
 //        final int placement = 1;
         telemetry.addData("Placement: ", placement + "");
         telemetry.addData("xAverages: ", vsData[1]);
 
-        lift.runToTarget("mtrLift", -100, .6, true);
+        lift.runToTarget("mtrLift", -200, .6, true);
 
         vision.SetFlag(drive, "Vision Done");
         vision.SetFlag(lift, "Vision Done");
@@ -131,7 +132,7 @@ public class Auto extends OpMode {
 
                 //lift.WaitForFlag("Vision Done");
                 lift.setServoPower("srvRotator", r.rotatorOpen);
-//                lift.runToTarget("mtrLift", -100,0.6,true);
+
                 lift.setServoPosition("srvClampLeft", r.leftOpen - 0.08 );
                 lift.setServoPosition("srvClampRight", r.rightOpen);
                 //lift.pause(500);
@@ -145,7 +146,7 @@ public class Auto extends OpMode {
                         drive.translate(-155, safespeed, 3.8);
                         break;
                     case 2:
-                        drive.translate(120, safespeed, 8);
+                        drive.translate(120, safespeed, 9);
                         break;
                     case 3:
                         drive.translate(100, safespeed, 15);
@@ -159,8 +160,8 @@ public class Auto extends OpMode {
                 drive.SetFlag(lift, "In Position");
 
                 lift.WaitForFlag("In Position");
-
-                lift.runToTarget("mtrLift", 150, safespeed, true);
+                lift.runToTarget("mtrLift", 200,0.6,true);
+                //lift.runToTarget("mtrLift", 150, safespeed, true);
                 lift.pause(250);
                 lift.setServoPosition("srvClampLeft", r.leftClosed);
                 lift.setServoPosition("srvClampRight", r.rightClosed);
@@ -207,24 +208,28 @@ public class Auto extends OpMode {
                     drive.SetFlag(lift, "Place");
 
                     lift.WaitForFlag("Place");
-                    lift.runToTarget("mtrLift", 250, .6, true);
+                    lift.runToTarget("mtrLift", 150, .6, true);
+
                     lift.setServoPosition("srvClampLeft", r.leftOpen);
                     lift.setServoPosition("srvClampRight", r.rightOpen);
-                    //lift.pause(500);
+
                     //lift.runToTarget("mtrLift", -200, .6, true);
                     lift.SetFlag(drive, "Placed");
 
 
 
                     drive.WaitForFlag("Placed");
+                    //lift.setServoPosition("srvRotator", r.rotatorClosed);
+                    lift.runToTarget("mtrLift", -125, .6, true);
+
                     drive.translate(0, safespeed, 5);
                     drive.rotate(180, 0.5);
 //                    drive.SetFlag(lift, "DropLift");
-
+//
 //                    lift.WaitForFlag("DropLift");
-                    lift.setServoPosition("srvClampLeft", r.leftClosed-.08);
+                    //lift.setServoPosition("srvClampLeft", r.leftClosed-.08);
                     lift.setServoPosition("srvRotator", r.rotatorClosed);
-                    lift.runToTarget("mtrLift", 200, 0.6, true);
+                    lift.runToTarget("mtrLift", 450, 0.6, true);
 
                     drive.translate(0, safespeed, 5);
 
