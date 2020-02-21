@@ -211,13 +211,13 @@ public class ImageAnalyzer extends OpMode {
         if(xAverages >= 0 && xAverages < 6*width/11) {
             //Toast.makeText(context, "2", Toast.LENGTH_LONG).show();
             pos =  2;
-        }
-        if(xAverages >= 6   *width/11 && xAverages < 7*width/11) {
+        }else
+        if(xAverages >= 6*width/11 && xAverages < 8*width/11) {
             //Toast.makeText(context, "3", Toast.LENGTH_LONG).show();
             pos =  3;
-        }
-        if(xAverages >= 7*width/11 && xAverages <= width){
-
+        }else
+        if(xAverages >= 8*width/11 && xAverages <= width){
+            //Toast.makeText(context, "1", Toast.LENGTH_LONG).show();
             pos =  1;
         } else {
             telemetry.addData("VISION ", "ERRORED OUT");

@@ -120,7 +120,7 @@ public class TeleOpComp extends OpMode {
             if(gamepad2.y && !OSFoundGrabbers){
                 OSFoundGrabbers = true;
                 usingFoundGrabbers = !usingFoundGrabbers;
-            } else if(!gamepad1.y) OSFoundGrabbers = false;
+            } else if(!gamepad2.y) OSFoundGrabbers = false;
 
             if(usingFoundGrabbers){
                 r.setServoPosition("srvFoundLeft", .85);
