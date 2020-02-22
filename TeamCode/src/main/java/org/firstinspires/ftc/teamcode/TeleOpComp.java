@@ -140,9 +140,9 @@ public class TeleOpComp extends OpMode {
             } else if(!gamepad2.x) OSRotator = false;
 
             if(inRotator){
-                r.setServoPosition("srvRotator", .85);
+                r.setServoPosition("srvRotator", r.rotatorClosed);
             } else {
-                r.setServoPosition("srvRotator", .1);
+                r.setServoPosition("srvRotator", r.rotatorOpen);
             }
 
 //          **********************************Stick Adjustments*************************************

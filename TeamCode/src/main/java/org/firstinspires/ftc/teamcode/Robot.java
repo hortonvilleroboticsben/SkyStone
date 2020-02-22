@@ -110,7 +110,7 @@ class   Robot{
     double safeSpeed = .65;
     double leftOpen = .18, leftClosed = .27;
     double rightOpen = .4, rightClosed = .19;
-    double rotatorOpen = .25, rotatorClosed = .9;
+    double rotatorOpen = .15, rotatorClosed = .9;
     double foundLeftDown = .1, foundLeftUp = .4;
     double foundRightDown = .3, foundRightUp = .85;
 
@@ -237,6 +237,7 @@ class   Robot{
     public void setTarget(String motorName, int target) {
         if (motors.get(motorName) != null) {
             motors.get(motorName).setTargetPosition(target);
+            while(motors.get(motorName).getTargetPosition() == 0);
             setRunMode(motorName, DcMotor.RunMode.RUN_TO_POSITION);
 //            motors.get(motorName).setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(10,0.05,0,0));
         }

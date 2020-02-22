@@ -173,8 +173,8 @@ public class ImageAnalyzer extends OpMode {
         save(bitmap);
         int xAverages = 0;
         int count = 0;
-        for (int p = 0; p < width; p+=10) {
-            for (int e = 0; e < height; e+=10) {
+        for (int p = 0; p < width; p+=5) {
+            for (int e = 0; e < height; e+=5) {
                 //textView.setText("asdlfjalsdjfk;asdfjasdlkfj");
 
 
@@ -208,11 +208,11 @@ public class ImageAnalyzer extends OpMode {
 
         int pos = 666;
 
-        if(xAverages >= 0 && xAverages < 6*width/11) {
+        if(xAverages >= 0 && xAverages < 5*width/11) {
             //Toast.makeText(context, "2", Toast.LENGTH_LONG).show();
             pos =  2;
         }else
-        if(xAverages >= 6*width/11 && xAverages < 8*width/11) {
+        if(xAverages >= 5*width/11 && xAverages < 8*width/11) {
             //Toast.makeText(context, "3", Toast.LENGTH_LONG).show();
             pos =  3;
         }else

@@ -108,6 +108,7 @@ class StateMachine{
     public void initRunToTarget(String motorName, int target, double power) {
         if (rbt.motors.get(motorName) != null) {
             rbt.setTarget(motorName, target);
+            while(rbt.motors.get(motorName).getTargetPosition() == 0);
             rbt.setPower(motorName, power);
         } else {
             Log.e(TAG, "initRunToTarget: failed to run motor: " + motorName + " to target: " + target + " at power: " + power);
@@ -118,6 +119,7 @@ class StateMachine{
         if(next_state_to_execute()) {
             if(moveInit && reset){
                 rbt.resetEncoder(motorName);
+                while(Math.abs(rbt.getEncoderCounts(motorName)) > 10);
                 initRunToTarget(motorName, target, power);
 //                rbt.setRunMode(motorName, DcMotor.RunMode.RUN_USING_ENCODER);
                 moveInit = false;
