@@ -109,6 +109,11 @@ class StateMachine{
         if (rbt.motors.get(motorName) != null) {
             rbt.setTarget(motorName, target);
             while(rbt.motors.get(motorName).getTargetPosition() == 0);
+            try {
+                TimeUnit.MILLISECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             rbt.setPower(motorName, power);
         } else {
             Log.e(TAG, "initRunToTarget: failed to run motor: " + motorName + " to target: " + target + " at power: " + power);

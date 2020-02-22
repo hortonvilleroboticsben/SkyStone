@@ -19,9 +19,10 @@ public class Match15 extends OpMode {
     @Override
     public void loop() {
         drive.initializeMachine();
-        drive.pause(5);
+        drive.pause(5000);
         drive.translate(0,0.6, 48);
-        drive.translate(180, 0.6, 30);
-        drive.translate(-90, 0.6, 24);
+        drive.pause(10000);
+        drive.translate(180, 0.6, 24);
+        drive.translate(90, 0.6, 24);
     }
 }
